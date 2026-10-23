@@ -138,7 +138,7 @@ export const StudentPrivacyConsentPage: React.FC = () => {
           }`}
         >
           <Download className="w-3.5 h-3.5" />
-          <span>Download My Data (Portability)</span>
+          <span>Download My Data (PDF Dossier)</span>
         </button>
       </div>
 
