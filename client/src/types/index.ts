@@ -1,5 +1,5 @@
 export type Role = 'ADMIN' | 'TEACHER' | 'STUDENT';
-export type Language = 'en' | 'kn';
+export type Language = 'en';
 
 export interface User {
   id: number;

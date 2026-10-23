@@ -21,7 +21,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   isStandalone = false,
 }) => {
   const { user, logout } = useAuth();
-  const { language, setLanguage, t } = useLanguage();
+  const { t } = useLanguage();
 
   const getPageInfo = () => {
     switch (currentTab) {
@@ -213,31 +213,6 @@ export const Navbar: React.FC<NavbarProps> = ({
               <span className="w-2 h-2 rounded-full bg-[#10B981] animate-pulse" />
               <span className="text-[#6EE7B7] font-medium">Edge AI:</span>
               <span>Local Processing</span>
-            </div>
-
-            {/* Language Selector */}
-            <div className="flex items-center bg-[#10231C] rounded-xl p-0.5 border border-[#294638]">
-              <button
-                onClick={() => setLanguage('en')}
-                className={`px-2 py-1 text-xs font-semibold rounded-lg transition ${
-                  language === 'en'
-                    ? 'bg-[#10B981] text-[#0B1713] font-bold shadow-xs'
-                    : 'text-[#A7B8AE] hover:text-[#F8FAFC]'
-                }`}
-              >
-                EN
-              </button>
-              <button
-                onClick={() => setLanguage('kn')}
-                className={`px-2 py-1 text-xs font-semibold rounded-lg transition ${
-                  language === 'kn'
-                    ? 'bg-[#10B981] text-[#0B1713] font-bold shadow-xs'
-                    : 'text-[#A7B8AE] hover:text-[#F8FAFC]'
-                }`}
-                title="Kannada Translation"
-              >
-                ಕನ್ನಡ
-              </button>
             </div>
 
             {/* User Profile / Logout */}

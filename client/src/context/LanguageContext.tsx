@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useEffect } from 'react';
 import { Language } from '../types';
 import { translations } from '../i18n';
 
@@ -11,16 +11,13 @@ interface LanguageContextType {
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
 
 export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [language, setLanguageState] = useState<Language>(() => {
-    return (localStorage.getItem('classguard_lang') as Language) || 'en';
-  });
+  useEffect(() => {
+    localStorage.setItem('classguard_lang', 'en');
+  }, []);
 
-  const setLanguage = (lang: Language) => {
-    setLanguageState(lang);
-    localStorage.setItem('classguard_lang', lang);
-  };
-
-  const t = translations[language] || translations.en;
+  const language: Language = 'en';
+  const setLanguage = (_lang: Language) => {};
+  const t = translations.en;
 
   return (
     <LanguageContext.Provider value={{ language, setLanguage, t }}>
