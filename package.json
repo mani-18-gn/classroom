@@ -1,0 +1,25 @@
+{
+  "name": "classguard-ai",
+  "version": "2.4.0",
+  "description": "Smart Classroom Safety & Attention Monitoring System",
+  "main": "server/src/index.js",
+  "scripts": {
+    "dev": "concurrently \"npm run server\" \"npm run client\"",
+    "server": "cd server && node src/index.js",
+    "client": "cd client && npm run dev",
+    "seed": "cd server && node src/seed.js",
+    "build": "cd client && npm run build"
+  },
+  "keywords": [
+    "ai",
+    "classroom",
+    "safety",
+    "privacy-first",
+    "edtech"
+  ],
+  "author": "ClassGuard Team",
+  "license": "ISC",
+  "dependencies": {
+    "concurrently": "^10.0.5"
+  }
+}
