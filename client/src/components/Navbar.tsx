@@ -3,13 +3,13 @@ import { useAuth } from '../context/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
 import {
   ShieldCheck, GraduationCap, School, KeyRound, LogOut,
-  ArrowLeftRight, Menu, Lock, Sparkles, CheckCircle2
+  Menu, Lock, Sparkles, CheckCircle2
 } from 'lucide-react';
 
 interface NavbarProps {
   currentTab: string;
   setCurrentTab?: (tab: string) => void;
-  onOpenPortalSelection: () => void;
+  onOpenPortalSelection?: () => void;
   onToggleMobileSidebar?: () => void;
   isStandalone?: boolean;
 }
@@ -145,12 +145,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                   <ShieldCheck className="w-5 h-5" />
                 </div>
                 <div>
-                  <div className="flex items-center gap-2">
-                    <span className="font-bold text-base text-[#F8FAFC] tracking-tight">{t.appName}</span>
-                    <span className="text-[10px] uppercase font-bold bg-[#10B981]/20 text-[#6EE7B7] border border-[#10B981]/30 px-2 py-0.5 rounded-full">
-                      v2.4
-                    </span>
-                  </div>
+                  <span className="font-bold text-base text-[#F8FAFC] tracking-tight">{t.appName}</span>
                   <p className="text-[11px] text-[#A7B8AE] hidden sm:block">
                     Smart Classroom Safety & Privacy-First Attention Monitoring
                   </p>
@@ -174,7 +169,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             )}
           </div>
 
-          {/* Right Tools: Privacy Pill, Role Portals, Language & Profile */}
+          {/* Right Tools: Privacy Pill, Language & Profile */}
           <div className="flex items-center space-x-2 sm:space-x-3">
             {/* Edge AI Privacy Badge */}
             <div className="hidden xl:flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#17382B] border border-[#294638] text-[11px] text-[#A7B8AE]">
@@ -182,17 +177,6 @@ export const Navbar: React.FC<NavbarProps> = ({
               <span className="text-[#6EE7B7] font-medium">Edge AI:</span>
               <span>Local Processing</span>
             </div>
-
-            {/* Switch Portal Button */}
-            <button
-              onClick={onOpenPortalSelection}
-              className="flex items-center gap-1.5 bg-[#17382B] hover:bg-[#204735] text-[#F8FAFC] text-xs font-semibold px-3 py-1.5 rounded-xl border border-[#294638] hover:border-[#10B981] transition shadow-xs"
-              title="Select Student, Teacher, or Admin Portals"
-            >
-              <ArrowLeftRight className="w-3.5 h-3.5 text-[#10B981]" />
-              <span className="hidden sm:inline">Switch Portals</span>
-              <span className="sm:hidden">Portals</span>
-            </button>
 
             {/* Language Selector */}
             <div className="flex items-center bg-[#10231C] rounded-xl p-0.5 border border-[#294638]">

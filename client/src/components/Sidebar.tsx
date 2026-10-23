@@ -5,7 +5,7 @@ import {
   ShieldCheck, GraduationCap, School, KeyRound, LogOut,
   Video, Bell, LayoutDashboard, Building2, FileSpreadsheet,
   History, UserPlus, Info, ClipboardCheck, FileSearch,
-  Sliders, Lock, Shield, X, Sparkles, ChevronRight, ArrowLeftRight
+  Sliders, Lock, Shield, X, Sparkles
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -13,7 +13,7 @@ interface SidebarProps {
   setCurrentTab: (tab: string) => void;
   isOpenMobile: boolean;
   setIsOpenMobile: (open: boolean) => void;
-  onOpenPortalSelection: () => void;
+  onOpenPortalSelection?: () => void;
 }
 
 interface NavItem {
@@ -134,12 +134,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
               <ShieldCheck className="w-6 h-6" />
             </div>
             <div>
-              <div className="flex items-center gap-2">
-                <span className="font-bold text-base text-[#F8FAFC] tracking-tight">{t.appName}</span>
-                <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-[#204735] text-[#6EE7B7] border border-[#294638]">
-                  v2.4
-                </span>
-              </div>
+              <span className="font-bold text-base text-[#F8FAFC] tracking-tight">{t.appName}</span>
               <p className="text-[11px] text-[#A7B8AE] font-medium">Smart Classroom Safety</p>
             </div>
           </div>
@@ -155,25 +150,15 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
         {/* Current Role Indicator Banner */}
         <div className="px-4 pt-4 pb-2">
-          <div className="p-2.5 rounded-xl bg-[#17382B] border border-[#294638] flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <div className="w-2 h-2 rounded-full bg-[#10B981] animate-pulse" />
-              <span className="text-xs font-semibold text-[#F8FAFC]">
-                {user?.role === 'STUDENT'
-                  ? 'Student Portal'
-                  : user?.role === 'ADMIN'
-                  ? 'Super Admin Portal'
-                  : 'Teacher Cockpit'}
-              </span>
-            </div>
-            <button
-              onClick={onOpenPortalSelection}
-              className="text-[11px] text-[#6EE7B7] hover:text-[#10B981] font-medium flex items-center gap-0.5 transition"
-              title="Switch role portal"
-            >
-              <span>Switch</span>
-              <ChevronRight className="w-3 h-3" />
-            </button>
+          <div className="p-2.5 rounded-xl bg-[#17382B] border border-[#294638] flex items-center gap-2">
+            <div className="w-2 h-2 rounded-full bg-[#10B981] animate-pulse" />
+            <span className="text-xs font-semibold text-[#F8FAFC]">
+              {user?.role === 'STUDENT'
+                ? 'Student Portal'
+                : user?.role === 'ADMIN'
+                ? 'Super Admin Portal'
+                : 'Teacher Cockpit'}
+            </span>
           </div>
         </div>
 

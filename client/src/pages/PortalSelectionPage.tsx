@@ -3,7 +3,7 @@ import { useAuth } from '../context/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
 import {
   GraduationCap, School, ShieldAlert, ArrowRight, Sparkles,
-  CheckCircle2, Lock, EyeOff, ShieldCheck, KeyRound
+  CheckCircle2, Lock, EyeOff, KeyRound
 } from 'lucide-react';
 import { Role } from '../types';
 
@@ -60,11 +60,6 @@ export const PortalSelectionPage: React.FC<PortalSelectionPageProps> = ({
 
       {/* Title & System Vision */}
       <div className="text-center space-y-3 max-w-3xl mx-auto">
-        <div className="inline-flex items-center gap-2 bg-[#204735] border border-[#294638] text-[#6EE7B7] px-3.5 py-1.5 rounded-full text-xs font-semibold">
-          <ShieldCheck className="w-4 h-4 text-[#10B981]" />
-          <span>Multi-Role Access Control & Dedicated Portals</span>
-        </div>
-
         <h1 className="text-3xl sm:text-4xl font-extrabold text-[#F8FAFC] tracking-tight">
           Select Your Access Portal
         </h1>
