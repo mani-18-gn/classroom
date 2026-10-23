@@ -38,6 +38,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           badge: 'IN-THE-LOOP'
         };
       case 'dashboard':
+      case 'student-dashboard':
         if (user?.role === 'STUDENT') {
           return {
             title: 'Student Academic Portal',
@@ -56,6 +57,42 @@ export const Navbar: React.FC<NavbarProps> = ({
           title: 'Teacher Overview Dashboard',
           subtitle: 'Classroom performance, pace analysis & engagement metrics',
           badge: 'FACULTY'
+        };
+      case 'student-profile':
+        return {
+          title: 'Profile & Security',
+          subtitle: 'Personal academic identity, contacts & login session audit',
+          badge: 'STUDENT'
+        };
+      case 'student-classroom':
+        return {
+          title: 'My Classroom',
+          subtitle: 'Assigned lecture hall, camera status & weekly timetable',
+          badge: 'ACADEMIC'
+        };
+      case 'student-activity-records':
+        return {
+          title: 'Activity Records & Appeals',
+          subtitle: 'Transparent AI observation logs, teacher reviews & appeals',
+          badge: 'ACTIVITY'
+        };
+      case 'student-privacy-consent':
+        return {
+          title: 'Privacy & Data Rights Center',
+          subtitle: 'Biometric consent management, statutory requests & export',
+          badge: 'DPDP ACT'
+        };
+      case 'student-notifications':
+        return {
+          title: 'Notifications Center',
+          subtitle: 'Personal alerts for teacher reviews, appeals & security events',
+          badge: 'ALERTS'
+        };
+      case 'student-help-support':
+        return {
+          title: 'Help & Ethical Guidance',
+          subtitle: 'Student guidance, AI transparency charter & support desk',
+          badge: 'SUPPORT'
         };
       case 'classrooms':
         return {

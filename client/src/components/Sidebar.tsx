@@ -58,37 +58,22 @@ export const Sidebar: React.FC<SidebarProps> = ({
     if (user?.role === 'STUDENT') {
       return [
         {
-          section: 'STUDENT',
+          section: 'ACADEMICS & ACTIVITY',
           items: [
             { id: 'student-dashboard', label: 'Dashboard', icon: LayoutDashboard },
-          ]
-        },
-        {
-          section: 'MY ACCOUNT',
-          items: [
-            { id: 'student-profile', label: 'My Profile', icon: User },
+            { id: 'student-activity-records', label: 'Activity & Appeals', icon: FileText },
             { id: 'student-classroom', label: 'My Classroom', icon: School },
-          ]
-        },
-        {
-          section: 'MY ACTIVITY',
-          items: [
-            { id: 'student-activity-records', label: 'Activity Records', icon: FileText },
-            { id: 'student-activity-insights', label: 'Activity Insights', icon: TrendingUp },
-            { id: 'student-request-review', label: 'Request a Review', icon: GraduationCap },
           ]
         },
         {
           section: 'PRIVACY & SECURITY',
           items: [
-            { id: 'student-privacy-consent', label: 'Privacy & Consent', icon: Lock },
-            { id: 'student-privacy-requests', label: 'Privacy Requests', icon: FileSearch },
-            { id: 'student-download-data', label: 'Download My Data', icon: Download },
-            { id: 'student-security-center', label: 'Security Center', icon: ShieldCheck },
+            { id: 'student-profile', label: 'Profile & Security', icon: User },
+            { id: 'student-privacy-consent', label: 'Privacy & Data Rights', icon: Lock },
           ]
         },
         {
-          section: 'SUPPORT',
+          section: 'COMMUNICATION',
           items: [
             {
               id: 'student-notifications',

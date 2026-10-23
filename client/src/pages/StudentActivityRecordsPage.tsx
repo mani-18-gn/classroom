@@ -3,8 +3,10 @@ import { apiRequest } from '../services/api';
 import {
   FileText, Filter, Calendar, Search, CheckCircle2, Clock,
   XCircle, ChevronLeft, ChevronRight, Eye, ShieldCheck,
-  GraduationCap, AlertCircle, Camera, RefreshCw
+  GraduationCap, AlertCircle, Camera, RefreshCw, TrendingUp
 } from 'lucide-react';
+import { StudentActivityInsightsPage } from './StudentActivityInsightsPage';
+import { StudentRequestReviewPage } from './StudentRequestReviewPage';
 
 interface StudentActivityRecordsPageProps {
   initialStatusFilter?: string;
@@ -15,6 +17,7 @@ export const StudentActivityRecordsPage: React.FC<StudentActivityRecordsPageProp
   initialStatusFilter,
   onNavigateToAppeal
 }) => {
+  const [activeActivityTab, setActiveActivityTab] = useState<'records' | 'insights' | 'appeals'>('records');
   const [records, setRecords] = useState<any[]>([]);
   const [total, setTotal] = useState<number>(0);
   const [page, setPage] = useState<number>(1);
@@ -100,8 +103,50 @@ export const StudentActivityRecordsPage: React.FC<StudentActivityRecordsPageProp
         </button>
       </div>
 
-      {/* Filter Toolbar */}
-      <div className="bg-[#17382B] border border-[#294638] rounded-3xl p-5 shadow-sm space-y-4">
+      {/* Activity Hub Tabs */}
+      <div className="flex items-center gap-2 border-b border-[#294638] pb-1 flex-wrap">
+        <button
+          onClick={() => setActiveActivityTab('records')}
+          className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition border ${
+            activeActivityTab === 'records'
+              ? 'bg-[#10B981] text-[#0B1713] border-[#10B981]'
+              : 'bg-[#17382B] text-[#A7B8AE] border-[#294638] hover:text-[#F8FAFC]'
+          }`}
+        >
+          <FileText className="w-3.5 h-3.5" />
+          <span>Activity Records Feed</span>
+        </button>
+
+        <button
+          onClick={() => setActiveActivityTab('insights')}
+          className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition border ${
+            activeActivityTab === 'insights'
+              ? 'bg-[#10B981] text-[#0B1713] border-[#10B981]'
+              : 'bg-[#17382B] text-[#A7B8AE] border-[#294638] hover:text-[#F8FAFC]'
+          }`}
+        >
+          <TrendingUp className="w-3.5 h-3.5" />
+          <span>Activity Insights & Trends</span>
+        </button>
+
+        <button
+          onClick={() => setActiveActivityTab('appeals')}
+          className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition border ${
+            activeActivityTab === 'appeals'
+              ? 'bg-[#10B981] text-[#0B1713] border-[#10B981]'
+              : 'bg-[#17382B] text-[#A7B8AE] border-[#294638] hover:text-[#F8FAFC]'
+          }`}
+        >
+          <GraduationCap className="w-3.5 h-3.5" />
+          <span>Review Appeals Tracker</span>
+        </button>
+      </div>
+
+      {/* 1. Records Feed View */}
+      {activeActivityTab === 'records' && (
+        <div className="space-y-6 animate-fade-in">
+          {/* Filter Toolbar */}
+          <div className="bg-[#17382B] border border-[#294638] rounded-3xl p-5 shadow-sm space-y-4">
         <form onSubmit={handleSearchSubmit} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
           {/* Search */}
           <div className="lg:col-span-2 relative">
@@ -368,6 +413,22 @@ export const StudentActivityRecordsPage: React.FC<StudentActivityRecordsPageProp
           </div>
         )}
       </div>
+        </div>
+      )}
+
+      {/* 2. Activity Insights Tab */}
+      {activeActivityTab === 'insights' && (
+        <div className="animate-fade-in">
+          <StudentActivityInsightsPage />
+        </div>
+      )}
+
+      {/* 3. Review Appeals Tracker Tab */}
+      {activeActivityTab === 'appeals' && (
+        <div className="animate-fade-in">
+          <StudentRequestReviewPage />
+        </div>
+      )}
 
       {/* Evidence Snapshots Modal */}
       {selectedRecordForSnapshots && (

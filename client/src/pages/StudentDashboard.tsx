@@ -264,14 +264,14 @@ export const StudentDashboard: React.FC<StudentDashboardProps> = ({ onNavigate }
           </button>
 
           <button
-            onClick={() => handleNav('student-request-review')}
+            onClick={() => handleNav('student-classroom')}
             className="p-4 bg-[#17382B] hover:bg-[#204735] border border-[#294638] hover:border-[#10B981] rounded-2xl text-left transition group space-y-1.5"
           >
             <div className="w-8 h-8 rounded-xl bg-[#10231C] border border-[#294638] flex items-center justify-center text-[#10B981] group-hover:scale-105 transition">
-              <GraduationCap className="w-4 h-4" />
+              <School className="w-4 h-4" />
             </div>
-            <p className="text-xs font-bold text-[#F8FAFC]">Request a Review</p>
-            <p className="text-[11px] text-[#A7B8AE]">Appeal an observation</p>
+            <p className="text-xs font-bold text-[#F8FAFC]">My Classroom</p>
+            <p className="text-[11px] text-[#A7B8AE]">Faculty, schedule & room</p>
           </button>
         </div>
       </div>

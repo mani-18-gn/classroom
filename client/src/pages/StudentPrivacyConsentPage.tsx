@@ -2,10 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { apiRequest } from '../services/api';
 import {
   Lock, ShieldCheck, ShieldAlert, Clock, CheckCircle2,
-  XCircle, FileText, AlertTriangle, ArrowRight, RefreshCw, Eye
+  XCircle, FileText, AlertTriangle, ArrowRight, RefreshCw, Eye, Download
 } from 'lucide-react';
+import { StudentPrivacyRequestsPage } from './StudentPrivacyRequestsPage';
+import { StudentDownloadDataPage } from './StudentDownloadDataPage';
 
 export const StudentPrivacyConsentPage: React.FC = () => {
+  const [activePrivacyTab, setActivePrivacyTab] = useState<'consent' | 'requests' | 'download'>('consent');
   const [privacyData, setPrivacyData] = useState<any>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [updating, setUpdating] = useState<boolean>(false);
@@ -100,15 +103,57 @@ export const StudentPrivacyConsentPage: React.FC = () => {
         </button>
       </div>
 
-      {message && (
-        <div className="p-3.5 bg-[#204735] border border-[#10B981]/50 rounded-2xl text-xs text-[#6EE7B7] flex items-center gap-2">
-          <CheckCircle2 className="w-4 h-4 flex-shrink-0 text-[#10B981]" />
-          <span>{message}</span>
-        </div>
-      )}
+      {/* Tabs */}
+      <div className="flex items-center gap-2 border-b border-[#294638] pb-1 flex-wrap">
+        <button
+          onClick={() => setActivePrivacyTab('consent')}
+          className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition border ${
+            activePrivacyTab === 'consent'
+              ? 'bg-[#10B981] text-[#0B1713] border-[#10B981]'
+              : 'bg-[#17382B] text-[#A7B8AE] border-[#294638] hover:text-[#F8FAFC]'
+          }`}
+        >
+          <Lock className="w-3.5 h-3.5" />
+          <span>Biometric Consent & Purge</span>
+        </button>
 
-      {/* Current Consent Status & Action Panel */}
-      <div className="bg-[#17382B] border border-[#294638] rounded-3xl p-6 shadow-sm space-y-6">
+        <button
+          onClick={() => setActivePrivacyTab('requests')}
+          className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition border ${
+            activePrivacyTab === 'requests'
+              ? 'bg-[#10B981] text-[#0B1713] border-[#10B981]'
+              : 'bg-[#17382B] text-[#A7B8AE] border-[#294638] hover:text-[#F8FAFC]'
+          }`}
+        >
+          <ShieldAlert className="w-3.5 h-3.5" />
+          <span>Privacy Rights Requests</span>
+        </button>
+
+        <button
+          onClick={() => setActivePrivacyTab('download')}
+          className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition border ${
+            activePrivacyTab === 'download'
+              ? 'bg-[#10B981] text-[#0B1713] border-[#10B981]'
+              : 'bg-[#17382B] text-[#A7B8AE] border-[#294638] hover:text-[#F8FAFC]'
+          }`}
+        >
+          <Download className="w-3.5 h-3.5" />
+          <span>Download My Data (Portability)</span>
+        </button>
+      </div>
+
+      {/* 1. Consent Tab */}
+      {activePrivacyTab === 'consent' && (
+        <div className="space-y-8 animate-fade-in">
+          {message && (
+            <div className="p-3.5 bg-[#204735] border border-[#10B981]/50 rounded-2xl text-xs text-[#6EE7B7] flex items-center gap-2">
+              <CheckCircle2 className="w-4 h-4 flex-shrink-0 text-[#10B981]" />
+              <span>{message}</span>
+            </div>
+          )}
+
+          {/* Current Consent Status & Action Panel */}
+          <div className="bg-[#17382B] border border-[#294638] rounded-3xl p-6 shadow-sm space-y-6">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-[#294638]">
           <div className="space-y-1">
             <span className="text-[10px] text-[#A7B8AE] uppercase tracking-wider font-semibold">
@@ -281,6 +326,22 @@ export const StudentPrivacyConsentPage: React.FC = () => {
           </div>
         )}
       </div>
+        </div>
+      )}
+
+      {/* 2. Statutory Privacy Requests Tab */}
+      {activePrivacyTab === 'requests' && (
+        <div className="animate-fade-in">
+          <StudentPrivacyRequestsPage />
+        </div>
+      )}
+
+      {/* 3. Download My Data Tab */}
+      {activePrivacyTab === 'download' && (
+        <div className="animate-fade-in">
+          <StudentDownloadDataPage />
+        </div>
+      )}
 
       {/* Policy Modal */}
       {showPolicyModal && (
