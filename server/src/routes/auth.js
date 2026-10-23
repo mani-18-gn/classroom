@@ -24,9 +24,22 @@ router.post('/login', (req, res) => {
   `).get(cleanId, cleanId);
 
   if (!user || !bcrypt.compareSync(password, user.password_hash)) {
+    if (user) {
+      try {
+        db.prepare('INSERT INTO login_history (user_id, ip_address, user_agent, status) VALUES (?, ?, ?, ?)').run(
+          user.id, req.ip || '127.0.0.1', req.headers['user-agent'] || 'Browser Client', 'FAILED'
+        );
+      } catch (e) {}
+    }
     logAudit(null, cleanId, 'GUEST', 'LOGIN_FAILED', 'USER', null, 'Invalid credentials provided', req.ip);
     return res.status(401).json({ error: 'Invalid email/username or password.' });
   }
+
+  try {
+    db.prepare('INSERT INTO login_history (user_id, ip_address, user_agent, status) VALUES (?, ?, ?, ?)').run(
+      user.id, req.ip || '127.0.0.1', req.headers['user-agent'] || 'Browser Client', 'SUCCESS'
+    );
+  } catch (e) {}
 
   let roleDetails = null;
   if (user.role === 'TEACHER') {
@@ -106,6 +119,12 @@ router.post('/demo-login', (req, res) => {
     JWT_SECRET,
     { expiresIn: '12h' }
   );
+
+  try {
+    db.prepare('INSERT INTO login_history (user_id, ip_address, user_agent, status) VALUES (?, ?, ?, ?)').run(
+      targetUser.id, req.ip || '127.0.0.1', req.headers['user-agent'] || 'Demo Switcher', 'SUCCESS'
+    );
+  } catch (e) {}
 
   logAudit(targetUser.id, targetUser.full_name, targetUser.role, 'DEMO_LOGIN', 'USER', targetUser.id, `Demo persona activated as ${targetUser.role}`, req.ip);
 

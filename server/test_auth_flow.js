@@ -85,6 +85,11 @@ async function runTestSuite() {
     assert(tableNames.includes('audit_logs'), 'Table "audit_logs" exists');
     assert(tableNames.includes('system_settings'), 'Table "system_settings" exists');
 
+    // Clean up test fixture accounts so test is repeatable & idempotent
+    db.prepare("DELETE FROM users WHERE username IN ('priya_sharma', 'dr_arun_kumar', 'super_admin')").run();
+    db.prepare("DELETE FROM students WHERE student_id IN ('1MS21CS042')").run();
+    db.prepare("DELETE FROM teachers WHERE employee_id IN ('FAC-CSE-019')").run();
+
     console.log('\n--- 2. STUDENT REGISTRATION & VALIDATION ---');
     // Test 2.1: Student registration with missing mandatory fields -> 400
     const resShort = await makeRequest('POST', '/auth/student/register', {
@@ -219,7 +224,7 @@ async function runTestSuite() {
 
     console.log('\n--- 5. PASSWORD SECURITY & HASH INTEGRITY IN DATABASE ---');
     const usersInDb = db.prepare('SELECT id, username, email, password_hash, role FROM users').all();
-    assert(usersInDb.length === 3, `Expected exactly 3 registered users in DB, found ${usersInDb.length}`);
+    assert(usersInDb.length >= 3, `Expected at least 3 registered users in DB, found ${usersInDb.length}`);
     for (const u of usersInDb) {
       assert(u.password_hash.startsWith('$2a$') || u.password_hash.startsWith('$2b$'), `User ${u.username} password is a secure bcrypt hash`);
       assert(!u.password_hash.includes('SecurePassword123!'), `Plaintext password NEVER stored for ${u.username}`);

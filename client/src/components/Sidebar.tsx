@@ -1,11 +1,13 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
+import { apiRequest } from '../services/api';
 import {
   ShieldCheck, GraduationCap, School, KeyRound, LogOut,
   Video, Bell, LayoutDashboard, Building2, FileSpreadsheet,
   History, UserPlus, Info, ClipboardCheck, FileSearch,
-  Sliders, Lock, Shield, X, Sparkles
+  Sliders, Lock, Shield, X, Sparkles, Download, User,
+  TrendingUp, HelpCircle, FileText, FileQuestion
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -32,23 +34,69 @@ export const Sidebar: React.FC<SidebarProps> = ({
 }) => {
   const { user, logout } = useAuth();
   const { t } = useLanguage();
+  const [unreadCount, setUnreadCount] = useState<number>(0);
+
+  // Poll unread notifications if student
+  useEffect(() => {
+    if (user?.role === 'STUDENT') {
+      const fetchNotifCount = async () => {
+        try {
+          const res = await apiRequest('/students/me/notifications');
+          if (res.unreadCount !== undefined) {
+            setUnreadCount(res.unreadCount);
+          }
+        } catch (e) {}
+      };
+      fetchNotifCount();
+      const interval = setInterval(fetchNotifCount, 30000);
+      return () => clearInterval(interval);
+    }
+  }, [user]);
 
   // Navigation items based on active role
   const getNavItems = (): { section: string; items: NavItem[] }[] => {
     if (user?.role === 'STUDENT') {
       return [
         {
-          section: 'Student Overview',
+          section: 'STUDENT',
           items: [
-            { id: 'dashboard', label: 'My Profile & Consent', icon: GraduationCap },
-            { id: 'history', label: 'Verified Records', icon: History },
+            { id: 'student-dashboard', label: 'Dashboard', icon: LayoutDashboard },
           ]
         },
         {
-          section: 'Compliance & Ethics',
+          section: 'MY ACCOUNT',
           items: [
-            { id: 'privacy', label: 'Privacy Center & Export', icon: Lock },
-            { id: 'about', label: 'DPDP Privacy Rights', icon: Info },
+            { id: 'student-profile', label: 'My Profile', icon: User },
+            { id: 'student-classroom', label: 'My Classroom', icon: School },
+          ]
+        },
+        {
+          section: 'MY ACTIVITY',
+          items: [
+            { id: 'student-activity-records', label: 'Activity Records', icon: FileText },
+            { id: 'student-activity-insights', label: 'Activity Insights', icon: TrendingUp },
+            { id: 'student-request-review', label: 'Request a Review', icon: GraduationCap },
+          ]
+        },
+        {
+          section: 'PRIVACY & SECURITY',
+          items: [
+            { id: 'student-privacy-consent', label: 'Privacy & Consent', icon: Lock },
+            { id: 'student-privacy-requests', label: 'Privacy Requests', icon: FileSearch },
+            { id: 'student-download-data', label: 'Download My Data', icon: Download },
+            { id: 'student-security-center', label: 'Security Center', icon: ShieldCheck },
+          ]
+        },
+        {
+          section: 'SUPPORT',
+          items: [
+            {
+              id: 'student-notifications',
+              label: 'Notifications',
+              icon: Bell,
+              badge: unreadCount > 0 ? `${unreadCount}` : undefined
+            },
+            { id: 'student-help-support', label: 'Help & Support', icon: HelpCircle },
           ]
         }
       ];
@@ -128,7 +176,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
         <div className="p-5 border-b border-[#294638] flex items-center justify-between">
           <div
             className="flex items-center space-x-3 cursor-pointer group"
-            onClick={() => handleTabClick(user?.role === 'STUDENT' ? 'dashboard' : 'monitoring')}
+            onClick={() => handleTabClick(user?.role === 'STUDENT' ? 'student-dashboard' : 'monitoring')}
           >
             <div className="w-10 h-10 rounded-xl bg-[#17382B] border border-[#294638] flex items-center justify-center text-[#10B981] shadow-sm group-hover:border-[#10B981] transition">
               <ShieldCheck className="w-6 h-6" />
@@ -171,7 +219,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
               </p>
               {group.items.map((item) => {
                 const Icon = item.icon;
-                const isActive = currentTab === item.id;
+                const isActive = currentTab === item.id || (item.id === 'student-dashboard' && currentTab === 'dashboard');
                 return (
                   <button
                     key={item.id}

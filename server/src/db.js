@@ -189,6 +189,72 @@ db.exec(`
     timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
   );
 
+  CREATE TABLE IF NOT EXISTS review_appeals (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    appeal_code TEXT UNIQUE NOT NULL,
+    event_id INTEGER REFERENCES detected_events(id) ON DELETE CASCADE,
+    student_id INTEGER REFERENCES students(id) ON DELETE CASCADE,
+    reason_category TEXT NOT NULL CHECK(reason_category IN ('INCORRECT_DETECTION', 'WRONG_STUDENT', 'NORMAL_ACTIVITY', 'INCORRECT_TIMESTAMP', 'OTHER')),
+    explanation TEXT,
+    status TEXT DEFAULT 'SUBMITTED' CHECK(status IN ('SUBMITTED', 'UNDER_REVIEW', 'ADDITIONAL_INFO_REQUIRED', 'RESOLVED', 'REJECTED')),
+    teacher_decision TEXT CHECK(teacher_decision IN ('CONFIRMED', 'CORRECTED', 'DISMISSED') OR teacher_decision IS NULL),
+    teacher_notes TEXT,
+    reviewed_by TEXT,
+    reviewed_at DATETIME,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+  );
+
+  CREATE TABLE IF NOT EXISTS privacy_requests (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    request_code TEXT UNIQUE NOT NULL,
+    student_id INTEGER REFERENCES students(id) ON DELETE CASCADE,
+    user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+    category TEXT NOT NULL CHECK(category IN ('ACCESS_PERSONAL_DATA', 'CORRECT_INACCURATE_INFO', 'REQUEST_ERASURE', 'WITHDRAW_CONSENT', 'PRIVACY_COMPLAINT', 'DEACTIVATE_ACCOUNT', 'PRIVACY_QUESTION')),
+    explanation TEXT NOT NULL,
+    status TEXT DEFAULT 'SUBMITTED' CHECK(status IN ('SUBMITTED', 'UNDER_REVIEW', 'ADDITIONAL_INFO_REQUIRED', 'RESOLVED', 'REJECTED')),
+    admin_response TEXT,
+    reviewed_by TEXT,
+    completed_at DATETIME,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+  );
+
+  CREATE TABLE IF NOT EXISTS notifications (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+    student_id INTEGER REFERENCES students(id) ON DELETE CASCADE,
+    type TEXT NOT NULL,
+    title TEXT NOT NULL,
+    message TEXT NOT NULL,
+    link_tab TEXT,
+    is_read INTEGER DEFAULT 0,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+  );
+
+  CREATE TABLE IF NOT EXISTS login_history (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+    ip_address TEXT,
+    user_agent TEXT,
+    status TEXT DEFAULT 'SUCCESS',
+    timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
+  );
+
+  CREATE TABLE IF NOT EXISTS support_tickets (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    ticket_code TEXT UNIQUE NOT NULL,
+    user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+    student_id INTEGER REFERENCES students(id) ON DELETE SET NULL,
+    subject TEXT NOT NULL,
+    category TEXT NOT NULL,
+    message TEXT NOT NULL,
+    status TEXT DEFAULT 'OPEN' CHECK(status IN ('OPEN', 'IN_PROGRESS', 'RESOLVED', 'CLOSED')),
+    admin_response TEXT,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+  );
+
   CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);
   CREATE INDEX IF NOT EXISTS idx_users_username ON users(username);
   CREATE INDEX IF NOT EXISTS idx_teachers_user_id ON teachers(user_id);
@@ -198,6 +264,14 @@ db.exec(`
   CREATE INDEX IF NOT EXISTS idx_detected_events_student_id ON detected_events(student_id);
   CREATE INDEX IF NOT EXISTS idx_event_snapshots_event_id ON event_snapshots(event_id);
   CREATE INDEX IF NOT EXISTS idx_audit_logs_timestamp ON audit_logs(timestamp);
+  CREATE INDEX IF NOT EXISTS idx_review_appeals_student_id ON review_appeals(student_id);
+  CREATE INDEX IF NOT EXISTS idx_review_appeals_event_id ON review_appeals(event_id);
+  CREATE INDEX IF NOT EXISTS idx_privacy_requests_student_id ON privacy_requests(student_id);
+  CREATE INDEX IF NOT EXISTS idx_privacy_requests_user_id ON privacy_requests(user_id);
+  CREATE INDEX IF NOT EXISTS idx_notifications_user_id ON notifications(user_id);
+  CREATE INDEX IF NOT EXISTS idx_notifications_student_id ON notifications(student_id);
+  CREATE INDEX IF NOT EXISTS idx_login_history_user_id ON login_history(user_id);
+  CREATE INDEX IF NOT EXISTS idx_support_tickets_user_id ON support_tickets(user_id);
 `);
 
 // Safe column migrations for existing databases
@@ -206,6 +280,15 @@ try {
 } catch (e) {}
 try {
   db.exec("ALTER TABLE students ADD COLUMN face_descriptor TEXT;");
+} catch (e) {}
+try {
+  db.exec("ALTER TABLE students ADD COLUMN bio TEXT;");
+} catch (e) {}
+try {
+  db.exec("ALTER TABLE students ADD COLUMN emergency_contact TEXT;");
+} catch (e) {}
+try {
+  db.exec("ALTER TABLE students ADD COLUMN preferred_name TEXT;");
 } catch (e) {}
 try {
   db.exec("ALTER TABLE detected_events ADD COLUMN teacher_notes TEXT;");
@@ -225,7 +308,24 @@ try {
       INSERT INTO classrooms (id, classroom_code, name, camera_source, status)
       VALUES (1, 'CR-402', 'Room 402 — Advanced Computing Lab', 'Integrated Webcam', 'MONITORING')
     `).run();
+  } else {
+    // If classroom 1 exists but teacher_id is null, link teacher 1 if teacher exists
+    const teacher = db.prepare('SELECT id FROM teachers LIMIT 1').get();
+    if (teacher) {
+      db.prepare('UPDATE classrooms SET teacher_id = ? WHERE id = 1 AND teacher_id IS NULL').run(teacher.id);
+    }
   }
+
+  // Ensure student 1 is enrolled in classroom 1 if enrollment table is empty
+  const s1 = db.prepare('SELECT id FROM students WHERE id = 1').get();
+  const c1 = db.prepare('SELECT id FROM classrooms WHERE id = 1').get();
+  if (s1 && c1) {
+    const enrollCount = db.prepare('SELECT count(*) as count FROM enrollments WHERE student_id = ?').get(s1.id).count;
+    if (enrollCount === 0) {
+      db.prepare('INSERT OR IGNORE INTO enrollments (student_id, classroom_id) VALUES (?, ?)').run(s1.id, c1.id);
+    }
+  }
+
   const sCount = db.prepare('SELECT count(*) as count FROM monitoring_sessions').get().count;
   if (sCount === 0) {
     db.prepare(`

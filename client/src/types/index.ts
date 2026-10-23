@@ -142,3 +142,149 @@ export interface TimelineMarker {
   notes?: string;
   timestamp: string;
 }
+
+export interface StudentPortalProfile {
+  id: number;
+  userId?: number;
+  studentId: string;
+  rollNumber: string;
+  fullName: string;
+  preferredName?: string;
+  email: string;
+  phone?: string;
+  className: string;
+  section: string;
+  assignedClassroom?: string;
+  institutionId?: string;
+  accountRole: 'STUDENT';
+  accountStatus: string;
+  verificationStatus: string;
+  bio?: string;
+  emergencyContact?: string;
+  photoDataUrl?: string | null;
+  createdAt: string;
+  updatedAt?: string;
+}
+
+export interface StudentClassroomDetails {
+  classroom: {
+    id?: number;
+    classroom_code: string;
+    name: string;
+    department?: string;
+    semester?: string;
+    camera_source: string;
+    camera_status: 'IDLE' | 'MONITORING' | 'PAUSED';
+    teacher_name?: string;
+    teacher_department?: string;
+    teacher_email?: string;
+    teacher_phone?: string;
+    total_enrolled?: number;
+    created_at?: string;
+  };
+  studentEnrollment: {
+    studentId: string;
+    fullName: string;
+    className: string;
+    section: string;
+    rollNumber: string;
+  };
+  monitoringPolicy: {
+    onDeviceInference: boolean;
+    continuousVideoStreaming: boolean;
+    retentionPeriod: string;
+    humanInTheLoopMandate: string;
+  };
+  schedule: Array<{
+    day: string;
+    time: string;
+    subject: string;
+    room: string;
+    teacher: string;
+  }>;
+  notices: Array<{
+    id: number;
+    title: string;
+    date: string;
+    content: string;
+  }>;
+  supportContact: {
+    department: string;
+    coordinator: string;
+    email: string;
+    phone: string;
+  };
+}
+
+export interface ReviewAppeal {
+  id: number;
+  appeal_code: string;
+  event_id: number;
+  student_id: number;
+  reason_category: 'INCORRECT_DETECTION' | 'WRONG_STUDENT' | 'NORMAL_ACTIVITY' | 'INCORRECT_TIMESTAMP' | 'OTHER';
+  explanation?: string;
+  status: 'SUBMITTED' | 'UNDER_REVIEW' | 'ADDITIONAL_INFO_REQUIRED' | 'RESOLVED' | 'REJECTED';
+  teacher_decision?: 'CONFIRMED' | 'CORRECTED' | 'DISMISSED';
+  teacher_notes?: string;
+  reviewed_by?: string;
+  reviewed_at?: string;
+  created_at: string;
+  updated_at?: string;
+  event_type?: string;
+  category?: string;
+  ai_observation?: string;
+  confidence_score?: number;
+  duration_seconds?: number;
+  event_timestamp?: string;
+  event_verification_status?: string;
+}
+
+export interface PrivacyRequest {
+  id: number;
+  request_code: string;
+  student_id: number;
+  user_id: number;
+  category: 'ACCESS_PERSONAL_DATA' | 'CORRECT_INACCURATE_INFO' | 'REQUEST_ERASURE' | 'WITHDRAW_CONSENT' | 'PRIVACY_COMPLAINT' | 'DEACTIVATE_ACCOUNT' | 'PRIVACY_QUESTION';
+  explanation: string;
+  status: 'SUBMITTED' | 'UNDER_REVIEW' | 'ADDITIONAL_INFO_REQUIRED' | 'RESOLVED' | 'REJECTED';
+  admin_response?: string;
+  reviewed_by?: string;
+  completed_at?: string;
+  created_at: string;
+  updated_at?: string;
+}
+
+export interface NotificationItem {
+  id: number;
+  user_id: number;
+  student_id?: number;
+  type: string;
+  title: string;
+  message: string;
+  link_tab?: string;
+  is_read: number;
+  created_at: string;
+}
+
+export interface LoginHistoryItem {
+  id: number;
+  ip_address: string;
+  user_agent: string;
+  status: string;
+  timestamp: string;
+}
+
+export interface SupportTicket {
+  id: number;
+  ticket_code: string;
+  user_id: number;
+  student_id?: number;
+  subject: string;
+  category: string;
+  message: string;
+  status: 'OPEN' | 'IN_PROGRESS' | 'RESOLVED' | 'CLOSED';
+  admin_response?: string;
+  created_at: string;
+  updated_at?: string;
+}
+

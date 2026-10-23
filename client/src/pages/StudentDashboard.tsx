@@ -1,380 +1,446 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { useLanguage } from '../context/LanguageContext';
 import { apiRequest } from '../services/api';
 import {
-  ShieldCheck, ShieldOff, Download, Trash2, CheckCircle2,
-  Lock, Eye
+  GraduationCap, ShieldCheck, ShieldAlert, Clock, CheckCircle2,
+  XCircle, Bell, ArrowRight, ArrowUpRight, School, FileText,
+  User, Lock, Sparkles, RefreshCw, AlertCircle
 } from 'lucide-react';
 
-export const StudentDashboard: React.FC = () => {
+interface StudentDashboardProps {
+  onNavigate?: (tab: string, filter?: string) => void;
+}
+
+export const StudentDashboard: React.FC<StudentDashboardProps> = ({ onNavigate }) => {
   const { user } = useAuth();
-  const { t } = useLanguage();
-
-  const [studentData, setStudentData] = useState<any>(null);
+  const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState<boolean>(true);
-  const [actionMessage, setActionMessage] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
-  const fetchStudentProfile = async () => {
+  const fetchDashboard = async () => {
+    setLoading(true);
+    setError(null);
     try {
-      // Fetch logged in student ID or student #1 by default
-      const targetId = user?.studentId || user?.roleDetails?.id || 1;
-      const res = await apiRequest(`/students/${targetId}`);
-      setStudentData(res);
-    } catch (err) {
-      console.error('Failed to fetch student data:', err);
+      const res = await apiRequest('/students/me/dashboard');
+      setData(res);
+    } catch (err: any) {
+      console.error('Failed to load student dashboard:', err);
+      setError(err.message || 'Unable to load dashboard data from backend server.');
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchStudentProfile();
+    fetchDashboard();
   }, [user]);
 
-  const handleWithdrawConsent = async () => {
-    if (!studentData?.student?.id) return;
-    const confirmWithdraw = window.confirm(
-      'Are you sure you want to withdraw consent? Your mathematical biometric facial profile will be permanently purged immediately, and you will no longer be identified in classroom attention metrics.'
-    );
-    if (!confirmWithdraw) return;
-
-    try {
-      const res = await apiRequest(`/students/${studentData.student.id}/withdraw-consent`, {
-        method: 'POST',
-      });
-      setActionMessage(res.message);
-      fetchStudentProfile();
-    } catch (err: any) {
-      alert(err.message || 'Failed to withdraw consent');
-    }
-  };
-
-  const handleExportData = () => {
-    if (!studentData?.student?.id) return;
-    window.open(`/api/privacy/export-my-data/${studentData.student.id}`, '_blank');
-  };
-
-  const handleDeleteDataRequest = async () => {
-    if (!studentData?.student?.id) return;
-    const confirmDelete = window.confirm(
-      'CRITICAL: Request permanent data erasure? All personal records, enrollment links, and biometric tokens will be permanently scrubbed.'
-    );
-    if (!confirmDelete) return;
-
-    try {
-      const res = await apiRequest(`/students/${studentData.student.id}/data`, {
-        method: 'DELETE',
-      });
-      setActionMessage(res.message);
-      fetchStudentProfile();
-    } catch (err: any) {
-      alert(err.message || 'Failed to delete data');
+  const handleNav = (tab: string, filter?: string) => {
+    if (onNavigate) {
+      onNavigate(tab, filter);
     }
   };
 
   if (loading) {
-    return <div className="p-8 text-center text-[#A7B8AE] text-sm font-mono">Loading student profile & consent records...</div>;
+    return (
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12 flex flex-col items-center justify-center space-y-4">
+        <div className="w-10 h-10 border-4 border-[#10B981]/20 border-t-[#10B981] rounded-full animate-spin" />
+        <p className="text-xs font-mono uppercase tracking-widest text-[#6EE7B7]">
+          Loading Authenticated Student Cockpit...
+        </p>
+      </div>
+    );
   }
 
-  const s = studentData?.student;
-  const stats = studentData?.statistics;
-  const events: any[] = studentData?.recentEvents || [];
+  if (error || !data) {
+    return (
+      <div className="max-w-4xl mx-auto px-4 py-12">
+        <div className="bg-[#17382B] border border-[#F87171]/40 rounded-3xl p-8 text-center space-y-4">
+          <AlertCircle className="w-10 h-10 text-[#F87171] mx-auto" />
+          <h2 className="text-lg font-bold text-[#F8FAFC]">Failed to Load Student Portal</h2>
+          <p className="text-xs text-[#A7B8AE] max-w-md mx-auto">{error || 'Session could not be initialized.'}</p>
+          <button
+            onClick={fetchDashboard}
+            className="px-4 py-2 bg-[#204735] hover:bg-[#10B981] hover:text-[#0B1713] text-xs font-bold rounded-xl border border-[#294638] transition inline-flex items-center gap-2"
+          >
+            <RefreshCw className="w-3.5 h-3.5" /> Retry Connection
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  const s = data.student;
+  const classroom = data.classroom;
+  const stats = data.statistics;
+  const privacy = data.privacyConsent;
+  const recent = data.recentActivity || [];
+  const notifs = data.recentNotifications || [];
 
   return (
-    <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between flex-wrap gap-4 pb-4 border-b border-[#294638]">
-        <div>
-          <div className="flex items-center gap-2">
-            <h1 className="text-xl font-bold text-[#F8FAFC] tracking-tight">Student Privacy & Consent Portal</h1>
-            <span className="text-xs bg-[#204735] text-[#6EE7B7] font-mono px-2.5 py-0.5 rounded-full border border-[#294638]">
-              Student Role: {s?.full_name || user?.fullName || 'Enrolled Student'}
-            </span>
-          </div>
-          <p className="text-xs text-[#A7B8AE] mt-0.5">
-            Transparent view of what information is stored, active consent status, and privacy rights under DPDP Act 2023 / FERPA.
-          </p>
-        </div>
-
-        <div className="flex items-center gap-2">
-          <button
-            onClick={handleExportData}
-            className="flex items-center gap-1.5 bg-[#204735] hover:bg-[#10231C] text-[#F8FAFC] text-xs font-semibold px-3 py-1.5 rounded-xl border border-[#294638] transition"
-          >
-            <Download className="w-3.5 h-3.5 text-[#10B981]" />
-            <span>Download My Data (JSON)</span>
-          </button>
-        </div>
-      </div>
-
-      {actionMessage && (
-        <div className="p-3 bg-[#204735] border border-[#10B981]/40 rounded-2xl text-xs text-[#6EE7B7] flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <CheckCircle2 className="w-4 h-4 flex-shrink-0 text-[#10B981]" />
-            <span>{actionMessage}</span>
-          </div>
-          <button onClick={() => setActionMessage(null)} className="text-[#A7B8AE] hover:text-[#F8FAFC] text-xs">
-            Dismiss
-          </button>
-        </div>
-      )}
-
-      {/* Student Profile & Consent Status Card */}
-      <div className="bg-[#17382B] border border-[#294638] rounded-3xl p-6 shadow-sm relative overflow-hidden">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-start">
-          <div className="space-y-3">
-            <div>
-              <span className="text-[10px] text-[#A7B8AE] uppercase tracking-wider font-semibold block">Student Name</span>
-              <h2 className="text-lg font-bold text-[#F8FAFC]">{s?.full_name || user?.fullName}</h2>
-              <p className="text-xs text-[#A7B8AE] font-mono">ID: {s?.student_id || 'N/A'} • Roll: {s?.roll_number || 'N/A'}</p>
+    <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8 animate-fade-in">
+      {/* 1. Welcome & Profile Banner */}
+      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#17382B] via-[#10231C] to-[#0B1713] border border-[#294638] p-6 sm:p-8 shadow-sm">
+        <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+          <div className="space-y-2">
+            <div className="flex items-center gap-2.5">
+              <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-[#204735] text-[#6EE7B7] border border-[#10B981]/30">
+                Student Portal
+              </span>
+              <span className="flex items-center gap-1.5 text-xs text-[#A7B8AE]">
+                <span className="w-2 h-2 rounded-full bg-[#10B981] animate-pulse" />
+                Verified Active Session
+              </span>
             </div>
-            <div>
-              <span className="text-[10px] text-[#A7B8AE] uppercase tracking-wider font-semibold block">Academic Course</span>
-              <p className="text-xs text-[#F8FAFC]">{s?.class_name || 'Classroom'} • Sec {s?.section || 'A'}</p>
-            </div>
-            <div>
-              <span className="text-[10px] text-[#A7B8AE] uppercase tracking-wider font-semibold block">Email</span>
-              <p className="text-xs text-[#F8FAFC] font-mono">{s?.email || user?.email || 'N/A'}</p>
-            </div>
-          </div>
-
-          {/* Consent Status Badge */}
-          <div className="bg-[#10231C] p-4 rounded-2xl border border-[#294638] space-y-2">
-            <span className="text-[10px] text-[#A7B8AE] uppercase tracking-wider font-semibold block">Biometric Consent Status</span>
-            <div className="flex items-center gap-2">
-              {s?.consent_status === 'CONSENTED' ? (
-                <div className="flex items-center gap-1.5 text-xs font-bold text-[#10B981] bg-[#204735] px-2.5 py-1 rounded-lg border border-[#10B981]/40">
-                  <ShieldCheck className="w-4 h-4" /> CONSENT ACTIVE
-                </div>
-              ) : (
-                <div className="flex items-center gap-1.5 text-xs font-bold text-[#F87171] bg-[#F87171]/20 px-2.5 py-1 rounded-lg border border-[#F87171]/40">
-                  <ShieldOff className="w-4 h-4" /> CONSENT WITHDRAWN
-                </div>
-              )}
-            </div>
-            <p className="text-[11px] text-[#A7B8AE] leading-tight">
-              Biometric mathematical hash token is {s?.consent_status === 'CONSENTED' ? 'ACTIVE for authorized identity matching.' : 'PERMANENTLY PURGED.'}
+            <h1 className="text-2xl sm:text-3xl font-extrabold text-[#F8FAFC] tracking-tight">
+              Welcome back, {s.preferredName || s.fullName}
+            </h1>
+            <p className="text-xs sm:text-sm text-[#A7B8AE] max-w-xl">
+              Transparent, privacy-first classroom observation portal. View your registered academic status, verified records, digital consent, and submit review appeals.
             </p>
-
-            <div className="pt-2">
-              {s?.consent_status === 'CONSENTED' ? (
-                <button
-                  onClick={handleWithdrawConsent}
-                  className="w-full bg-[#F87171]/15 hover:bg-[#F87171] text-[#F87171] hover:text-[#0B1713] border border-[#F87171]/40 text-xs font-bold py-1.5 rounded-xl transition"
-                >
-                  Withdraw Biometric Consent
-                </button>
-              ) : (
-                <p className="text-[10px] text-[#A7B8AE] italic">No biometric profile active</p>
-              )}
-            </div>
           </div>
 
-          {/* What Data is Stored Section */}
-          <div className="bg-[#10231C] p-4 rounded-2xl border border-[#294638] space-y-2 text-xs">
-            <span className="text-[10px] text-[#A7B8AE] uppercase tracking-wider font-semibold block">What Info is Stored?</span>
-            <ul className="space-y-1.5 text-[#F8FAFC] text-[11px]">
-              <li className="flex items-center gap-1.5">
-                <CheckCircle2 className="w-3.5 h-3.5 text-[#10B981]" />
-                <span>Name, Roll Number, Section</span>
-              </li>
-              <li className="flex items-center gap-1.5">
-                <Lock className="w-3.5 h-3.5 text-[#6EE7B7]" />
-                <span>Encrypted landmark hash (No raw photos stored)</span>
-              </li>
-              <li className="flex items-center gap-1.5">
-                <CheckCircle2 className="w-3.5 h-3.5 text-[#10B981]" />
-                <span>Teacher-verified safety notes</span>
-              </li>
-            </ul>
-
-            <div className="pt-2 border-t border-[#294638]">
-              <button
-                onClick={handleDeleteDataRequest}
-                className="text-[11px] text-[#F87171] hover:underline flex items-center gap-1"
-              >
-                <Trash2 className="w-3 h-3" /> Permanent Data Erasure Request
-              </button>
+          {/* Academic Profile Snippet Card */}
+          <div className="bg-[#10231C]/90 backdrop-blur-xs p-4 rounded-2xl border border-[#294638] min-w-[260px] space-y-2">
+            <div className="flex items-center justify-between">
+              <span className="text-[10px] text-[#A7B8AE] uppercase tracking-wider font-semibold">Student Identity</span>
+              <span className="text-[10px] font-mono font-bold text-[#6EE7B7] bg-[#204735] px-2 py-0.5 rounded border border-[#294638]">
+                {s.rollNumber ? `Roll #${s.rollNumber}` : 'Enrolled'}
+              </span>
+            </div>
+            <p className="text-sm font-bold text-[#F8FAFC] truncate">{s.fullName}</p>
+            <div className="text-[11px] text-[#A7B8AE] space-y-0.5 font-mono">
+              <p>USN: <span className="text-[#F8FAFC] font-semibold">{s.studentId}</span></p>
+              <p>Class: <span className="text-[#F8FAFC]">{s.className}</span> ({s.section})</p>
+              <p className="truncate">Room: <span className="text-[#6EE7B7]">{classroom.classroom_code} - {classroom.classroom_name}</span></p>
             </div>
           </div>
         </div>
       </div>
 
-      {/* AI Observations vs Verified Confirmations Stats */}
-      <div className="bg-[#17382B] border border-[#294638] rounded-3xl p-5 shadow-sm">
-        <h3 className="text-xs font-bold text-[#F8FAFC] uppercase tracking-wider mb-2">
-          Academic Activity Record (Explicit Distinction)
-        </h3>
-        <p className="text-xs text-[#A7B8AE] mb-4">
-          In compliance with ethical AI principles, preliminary AI observations are never treated as confirmed student misconduct.
-        </p>
-
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center">
-          <div className="bg-[#10231C] p-3 rounded-2xl border border-[#294638]">
-            <span className="text-[10px] text-[#A7B8AE] uppercase block font-semibold">AI Detected Observations</span>
-            <span className="text-xl font-bold text-[#FBBF24] font-mono mt-0.5 block">
-              {stats?.totalDetectedObservations || 0}
-            </span>
-            <span className="text-[10px] text-[#A7B8AE]">Unverified preliminary</span>
-          </div>
-
-          <div className="bg-[#10231C] p-3 rounded-2xl border border-[#294638]">
-            <span className="text-[10px] text-[#A7B8AE] uppercase block font-semibold">Teacher Verified</span>
-            <span className="text-xl font-bold text-[#10B981] font-mono mt-0.5 block">
-              {stats?.teacherVerifiedEvents || 0}
-            </span>
-            <span className="text-[10px] text-[#6EE7B7]">Confirmed by human</span>
-          </div>
-
-          <div className="bg-[#10231C] p-3 rounded-2xl border border-[#294638]">
-            <span className="text-[10px] text-[#A7B8AE] uppercase block font-semibold">False Positives Dismissed</span>
-            <span className="text-xl font-bold text-[#F8FAFC] font-mono mt-0.5 block">
-              {stats?.falsePositiveEvents || 0}
-            </span>
-            <span className="text-[10px] text-[#A7B8AE]">Normal class activity</span>
-          </div>
-
-          <div className="bg-[#10231C] p-3 rounded-2xl border border-[#294638]">
-            <span className="text-[10px] text-[#A7B8AE] uppercase block font-semibold">Pending Review</span>
-            <span className="text-xl font-bold text-[#6EE7B7] font-mono mt-0.5 block">
-              {stats?.pendingReviewEvents || 0}
-            </span>
-            <span className="text-[10px] text-[#A7B8AE]">Awaiting teacher</span>
-          </div>
+      {/* 2. Statistical Metric Highlights (Clickable Filter Shortcuts) */}
+      <div className="space-y-2">
+        <div className="flex items-center justify-between">
+          <h2 className="text-xs font-bold uppercase tracking-wider text-[#A7B8AE]">
+            Academic Activity Statistics (Actual Database Records)
+          </h2>
+          <span className="text-[11px] text-[#A7B8AE]">Click cards to filter records</span>
         </div>
-      </div>
 
-      {/* 1. Dedicated Official Verified Sleeping Records Section */}
-      <div className="bg-[#17382B] border border-[#294638] rounded-3xl p-5 shadow-sm space-y-3">
-        <div className="flex items-center justify-between pb-3 border-b border-[#294638] flex-wrap gap-2">
-          <div className="flex items-center gap-2.5">
-            <div className="p-2 bg-[#204735] text-[#10B981] rounded-xl border border-[#294638]">
-              <Eye className="w-5 h-5" />
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          {/* Card 1: Total AI Observations */}
+          <div
+            onClick={() => handleNav('student-activity-records', 'ALL')}
+            className="group bg-[#17382B] hover:bg-[#204735] border border-[#294638] hover:border-[#10B981] p-5 rounded-2xl cursor-pointer transition shadow-xs flex flex-col justify-between"
+          >
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-semibold text-[#A7B8AE] group-hover:text-[#F8FAFC] transition">
+                Total AI Observations
+              </span>
+              <Sparkles className="w-4 h-4 text-[#FBBF24]" />
             </div>
-            <div>
-              <h3 className="text-sm font-bold text-[#F8FAFC] tracking-tight flex items-center gap-2">
-                Official Verified Sleeping Records
-                <span className="text-[10px] bg-[#204735] text-[#6EE7B7] font-mono px-2 py-0.5 rounded-full border border-[#10B981]/40">
-                  {studentData?.verifiedSleepingRecords?.length || 0} Recorded
-                </span>
-              </h3>
-              <p className="text-[11px] text-[#A7B8AE]">
-                Incidents officially verified by your class teacher with recorded reason
+            <div className="mt-3">
+              <span className="text-3xl font-extrabold text-[#F8FAFC] font-mono">
+                {stats.totalDetectedObservations}
+              </span>
+              <p className="text-[11px] text-[#A7B8AE] mt-1 flex items-center gap-1">
+                <span>Preliminary edge alerts</span>
+                <ArrowRight className="w-3 h-3 text-[#10B981] group-hover:translate-x-1 transition" />
+              </p>
+            </div>
+          </div>
+
+          {/* Card 2: Teacher Reviewed */}
+          <div
+            onClick={() => handleNav('student-activity-records', 'VERIFIED')}
+            className="group bg-[#17382B] hover:bg-[#204735] border border-[#294638] hover:border-[#10B981] p-5 rounded-2xl cursor-pointer transition shadow-xs flex flex-col justify-between"
+          >
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-semibold text-[#A7B8AE] group-hover:text-[#F8FAFC] transition">
+                Teacher-Reviewed
+              </span>
+              <CheckCircle2 className="w-4 h-4 text-[#10B981]" />
+            </div>
+            <div className="mt-3">
+              <span className="text-3xl font-extrabold text-[#10B981] font-mono">
+                {stats.teacherReviewedCount}
+              </span>
+              <p className="text-[11px] text-[#6EE7B7] mt-1 flex items-center gap-1">
+                <span>Human confirmed conclusion</span>
+                <ArrowRight className="w-3 h-3 text-[#10B981] group-hover:translate-x-1 transition" />
+              </p>
+            </div>
+          </div>
+
+          {/* Card 3: Dismissed / False Positives */}
+          <div
+            onClick={() => handleNav('student-activity-records', 'DISMISSED')}
+            className="group bg-[#17382B] hover:bg-[#204735] border border-[#294638] hover:border-[#10B981] p-5 rounded-2xl cursor-pointer transition shadow-xs flex flex-col justify-between"
+          >
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-semibold text-[#A7B8AE] group-hover:text-[#F8FAFC] transition">
+                Dismissed Observations
+              </span>
+              <XCircle className="w-4 h-4 text-[#A7B8AE]" />
+            </div>
+            <div className="mt-3">
+              <span className="text-3xl font-extrabold text-[#F8FAFC] font-mono">
+                {stats.dismissedCount}
+              </span>
+              <p className="text-[11px] text-[#A7B8AE] mt-1 flex items-center gap-1">
+                <span>Normal active classroom behavior</span>
+                <ArrowRight className="w-3 h-3 text-[#10B981] group-hover:translate-x-1 transition" />
+              </p>
+            </div>
+          </div>
+
+          {/* Card 4: Pending Review */}
+          <div
+            onClick={() => handleNav('student-activity-records', 'PENDING')}
+            className="group bg-[#17382B] hover:bg-[#204735] border border-[#294638] hover:border-[#10B981] p-5 rounded-2xl cursor-pointer transition shadow-xs flex flex-col justify-between"
+          >
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-semibold text-[#A7B8AE] group-hover:text-[#F8FAFC] transition">
+                Pending Teacher Review
+              </span>
+              <Clock className="w-4 h-4 text-[#6EE7B7]" />
+            </div>
+            <div className="mt-3">
+              <span className="text-3xl font-extrabold text-[#6EE7B7] font-mono">
+                {stats.pendingReviewCount}
+              </span>
+              <p className="text-[11px] text-[#A7B8AE] mt-1 flex items-center gap-1">
+                <span>Awaiting human verification</span>
+                <ArrowRight className="w-3 h-3 text-[#10B981] group-hover:translate-x-1 transition" />
               </p>
             </div>
           </div>
         </div>
 
-        {/* Protection Policy Note */}
-        <div className="p-3 bg-[#204735] border border-[#294638] rounded-xl text-[11px] text-[#6EE7B7] flex items-start gap-2">
+        {/* Ethical AI Disclaimer Banner */}
+        <div className="p-3 bg-[#10231C] border border-[#294638] rounded-2xl flex items-start gap-2.5 text-xs text-[#A7B8AE]">
           <ShieldCheck className="w-4 h-4 text-[#10B981] flex-shrink-0 mt-0.5" />
           <span>
-            <strong>Fairness Guarantee:</strong> Preliminary camera vision alerts are never recorded on your student profile. An incident is only recorded once your class teacher verifies that you were sleeping and records the official justification reason.
+            <strong className="text-[#F8FAFC]">Ethical AI Guardrail:</strong> An AI-generated computer vision observation is purely unverified telemetry. It is strictly never used as proof of academic misconduct without explicit human teacher review and verification.
           </span>
-        </div>
-
-        {/* List of Verified Sleeping Records */}
-        <div className="space-y-2.5 pt-1">
-          {(!studentData?.verifiedSleepingRecords || studentData.verifiedSleepingRecords.length === 0) ? (
-            <div className="bg-[#10231C] border border-[#294638] rounded-2xl p-6 text-center">
-              <CheckCircle2 className="w-8 h-8 text-[#10B981]/60 mx-auto mb-1.5" />
-              <p className="text-xs font-semibold text-[#F8FAFC]">Clean Record — No Verified Sleeping Incidents</p>
-              <p className="text-[11px] text-[#A7B8AE] mt-0.5 max-w-md mx-auto">
-                No sleeping records have been verified by your class teacher for this student profile.
-              </p>
-            </div>
-          ) : (
-            studentData.verifiedSleepingRecords.map((rec: any) => (
-              <div
-                key={rec.id}
-                className="bg-[#10231C] border border-[#294638] rounded-2xl p-4 space-y-2.5 shadow-xs"
-              >
-                <div className="flex items-center justify-between flex-wrap gap-2">
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm font-bold text-[#F8FAFC]">🚨 Sleeping Observation</span>
-                    <span className="text-[10px] font-bold bg-[#204735] text-[#6EE7B7] px-2.5 py-0.5 rounded-full border border-[#10B981]/40">
-                      ✓ Verified by Class Teacher
-                    </span>
-                  </div>
-                  <span className="text-xs font-mono text-[#A7B8AE]">{rec.timestamp}</span>
-                </div>
-
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 text-xs bg-[#0B1713] p-2.5 rounded-xl border border-[#294638]">
-                  <div>
-                    <span className="text-[10px] text-[#A7B8AE] block uppercase">Duration</span>
-                    <strong className="text-[#F8FAFC]">{rec.duration_seconds} seconds</strong>
-                  </div>
-                  <div>
-                    <span className="text-[10px] text-[#A7B8AE] block uppercase">Verified By</span>
-                    <strong className="text-[#10B981]">{rec.verified_by_teacher || 'Class Teacher'}</strong>
-                  </div>
-                  <div>
-                    <span className="text-[10px] text-[#A7B8AE] block uppercase">Class / Session</span>
-                    <span className="text-[#6EE7B7] font-mono">{rec.session_code || 'Live Session'}</span>
-                  </div>
-                </div>
-
-                {/* Reason callout */}
-                <div className="bg-[#204735] border border-[#10B981]/40 rounded-xl p-3 text-xs">
-                  <div className="flex items-center gap-1.5 text-[#10B981] font-semibold text-[11px] mb-1">
-                    <CheckCircle2 className="w-3.5 h-3.5" />
-                    <span>Official Class Teacher Verification Reason:</span>
-                  </div>
-                  <p className="text-[#F8FAFC] text-xs italic font-medium">
-                    "{rec.teacher_notes || rec.verification_reason || 'Class teacher verified student was sleeping during lecture'}"
-                  </p>
-                </div>
-              </div>
-            ))
-          )}
         </div>
       </div>
 
-      {/* 2. All Recorded Events History Table */}
-      <div className="bg-[#17382B] border border-[#294638] rounded-3xl p-5 shadow-sm">
-        <h3 className="text-xs font-bold text-[#F8FAFC] uppercase tracking-wider mb-3">
-          All Student Activity Records
-        </h3>
+      {/* 3. Quick Actions Grid */}
+      <div className="space-y-3">
+        <h2 className="text-xs font-bold uppercase tracking-wider text-[#A7B8AE]">Quick Actions</h2>
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          <button
+            onClick={() => handleNav('student-profile')}
+            className="p-4 bg-[#17382B] hover:bg-[#204735] border border-[#294638] hover:border-[#10B981] rounded-2xl text-left transition group space-y-1.5"
+          >
+            <div className="w-8 h-8 rounded-xl bg-[#10231C] border border-[#294638] flex items-center justify-center text-[#10B981] group-hover:scale-105 transition">
+              <User className="w-4 h-4" />
+            </div>
+            <p className="text-xs font-bold text-[#F8FAFC]">My Profile</p>
+            <p className="text-[11px] text-[#A7B8AE]">Update contacts & password</p>
+          </button>
 
-        <div className="space-y-2">
-          {events.length === 0 ? (
-            <p className="text-xs text-[#A7B8AE] py-4 text-center">No recorded events for this profile.</p>
-          ) : (
-            events.map((evt) => (
-              <div
-                key={evt.id}
-                className="bg-[#10231C] border border-[#294638] rounded-2xl p-3.5 flex items-center justify-between text-xs flex-wrap gap-2"
-              >
-                <div>
-                  <div className="flex items-center gap-2">
-                    <strong className="text-[#F8FAFC]">{evt.event_type.replace(/_/g, ' ')}</strong>
-                    <span
-                      className={`text-[10px] font-semibold px-2 py-0.5 rounded ${
-                        evt.verification_status === 'VERIFIED'
-                          ? 'bg-[#204735] text-[#6EE7B7] border border-[#10B981]/40'
-                          : evt.verification_status === 'REJECTED'
-                          ? 'bg-[#17382B] text-[#A7B8AE]'
-                          : 'bg-[#FBBF24]/20 text-[#FBBF24] border border-[#FBBF24]/30'
-                      }`}
-                    >
-                      {evt.verification_status}
-                    </span>
+          <button
+            onClick={() => handleNav('student-privacy-consent')}
+            className="p-4 bg-[#17382B] hover:bg-[#204735] border border-[#294638] hover:border-[#10B981] rounded-2xl text-left transition group space-y-1.5"
+          >
+            <div className="w-8 h-8 rounded-xl bg-[#10231C] border border-[#294638] flex items-center justify-center text-[#6EE7B7] group-hover:scale-105 transition">
+              <Lock className="w-4 h-4" />
+            </div>
+            <p className="text-xs font-bold text-[#F8FAFC]">Privacy & Consent</p>
+            <p className="text-[11px] text-[#A7B8AE]">Manage DPDP consents</p>
+          </button>
+
+          <button
+            onClick={() => handleNav('student-activity-records')}
+            className="p-4 bg-[#17382B] hover:bg-[#204735] border border-[#294638] hover:border-[#10B981] rounded-2xl text-left transition group space-y-1.5"
+          >
+            <div className="w-8 h-8 rounded-xl bg-[#10231C] border border-[#294638] flex items-center justify-center text-[#FBBF24] group-hover:scale-105 transition">
+              <FileText className="w-4 h-4" />
+            </div>
+            <p className="text-xs font-bold text-[#F8FAFC]">Activity Records</p>
+            <p className="text-[11px] text-[#A7B8AE]">Filtered event logs</p>
+          </button>
+
+          <button
+            onClick={() => handleNav('student-request-review')}
+            className="p-4 bg-[#17382B] hover:bg-[#204735] border border-[#294638] hover:border-[#10B981] rounded-2xl text-left transition group space-y-1.5"
+          >
+            <div className="w-8 h-8 rounded-xl bg-[#10231C] border border-[#294638] flex items-center justify-center text-[#10B981] group-hover:scale-105 transition">
+              <GraduationCap className="w-4 h-4" />
+            </div>
+            <p className="text-xs font-bold text-[#F8FAFC]">Request a Review</p>
+            <p className="text-[11px] text-[#A7B8AE]">Appeal an observation</p>
+          </button>
+        </div>
+      </div>
+
+      {/* 4. Split Section: Recent Activity Records vs Notifications & Consent Status */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
+        {/* Left Column (2 Cols): Recent Authorized Activity Records */}
+        <div className="lg:col-span-2 bg-[#17382B] border border-[#294638] rounded-3xl p-6 space-y-4">
+          <div className="flex items-center justify-between pb-3 border-b border-[#294638]">
+            <div>
+              <h2 className="text-sm font-bold text-[#F8FAFC]">Recent Authorized Activity Records</h2>
+              <p className="text-[11px] text-[#A7B8AE]">Showing latest verified and pending event observations</p>
+            </div>
+            <button
+              onClick={() => handleNav('student-activity-records')}
+              className="text-xs font-semibold text-[#10B981] hover:text-[#6EE7B7] flex items-center gap-1 transition"
+            >
+              <span>View All Records</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </button>
+          </div>
+
+          <div className="space-y-3">
+            {recent.length === 0 ? (
+              <div className="text-center py-8 bg-[#10231C] rounded-2xl border border-[#294638]">
+                <CheckCircle2 className="w-8 h-8 text-[#10B981]/50 mx-auto mb-2" />
+                <p className="text-xs font-semibold text-[#F8FAFC]">No Recorded Events</p>
+                <p className="text-[11px] text-[#A7B8AE] mt-0.5">Your record is clean. No monitoring incidents logged.</p>
+              </div>
+            ) : (
+              recent.map((rec: any) => (
+                <div
+                  key={rec.id}
+                  className="bg-[#10231C] border border-[#294638] hover:border-[#10B981]/50 p-4 rounded-2xl transition space-y-2"
+                >
+                  <div className="flex items-center justify-between flex-wrap gap-2">
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs font-bold text-[#F8FAFC]">
+                        {rec.event_type.replace(/_/g, ' ')}
+                      </span>
+                      <span
+                        className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${
+                          rec.verification_status === 'VERIFIED'
+                            ? 'bg-[#204735] text-[#10B981] border-[#10B981]/40'
+                            : rec.verification_status === 'REJECTED'
+                            ? 'bg-[#10231C] text-[#A7B8AE] border-[#294638]'
+                            : 'bg-[#FBBF24]/10 text-[#FBBF24] border-[#FBBF24]/30'
+                        }`}
+                      >
+                        {rec.verification_status === 'VERIFIED'
+                          ? '✓ Teacher Verified'
+                          : rec.verification_status === 'REJECTED'
+                          ? 'Dismissed'
+                          : 'Pending Review'}
+                      </span>
+                      {rec.appeal_status && (
+                        <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-[#204735] text-[#6EE7B7] border border-[#10B981]/20">
+                          Appeal: {rec.appeal_status}
+                        </span>
+                      )}
+                    </div>
+                    <span className="text-[10px] text-[#A7B8AE] font-mono">{rec.timestamp}</span>
                   </div>
-                  <p className="text-[#A7B8AE] text-[11px] mt-0.5 italic">{evt.ai_observation}</p>
-                  {(evt.teacher_notes || evt.verification_reason) && (
-                    <p className="text-[11px] text-[#6EE7B7] mt-1 font-medium bg-[#204735] px-2 py-0.5 rounded border border-[#10B981]/30 inline-block">
-                      Teacher Reason: "{evt.teacher_notes || evt.verification_reason}" • Verified by {evt.verified_by_teacher || 'Class Teacher'}
-                    </p>
+
+                  <p className="text-xs text-[#A7B8AE] italic leading-relaxed">
+                    "{rec.ai_observation}"
+                  </p>
+
+                  {rec.teacher_notes && (
+                    <div className="bg-[#204735]/70 p-2.5 rounded-xl border border-[#294638] text-[11px]">
+                      <span className="text-[#6EE7B7] font-semibold">Teacher Decision Note: </span>
+                      <span className="text-[#F8FAFC]">"{rec.teacher_notes}"</span>
+                      <span className="text-[#A7B8AE] block mt-0.5 text-[10px]">
+                        Reviewed by {rec.verified_by_teacher} on {rec.verified_at}
+                      </span>
+                    </div>
                   )}
                 </div>
+              ))
+            )}
+          </div>
+        </div>
 
-                <div className="text-right text-[11px] text-[#A7B8AE] font-mono">
-                  <span>{evt.timestamp}</span>
-                </div>
+        {/* Right Column (1 Col): Privacy Status & Recent Notifications */}
+        <div className="space-y-6">
+          {/* Privacy & Consent Status Box */}
+          <div className="bg-[#17382B] border border-[#294638] rounded-3xl p-5 space-y-4">
+            <div className="flex items-center justify-between pb-2 border-b border-[#294638]">
+              <h3 className="text-xs font-bold uppercase tracking-wider text-[#F8FAFC] flex items-center gap-2">
+                <Lock className="w-3.5 h-3.5 text-[#10B981]" />
+                Privacy & Consent Status
+              </h3>
+              <button
+                onClick={() => handleNav('student-privacy-consent')}
+                className="text-[11px] text-[#10B981] hover:underline"
+              >
+                Manage
+              </button>
+            </div>
+
+            <div className="bg-[#10231C] p-3.5 rounded-2xl border border-[#294638] space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="text-[11px] text-[#A7B8AE]">Monitoring Consent</span>
+                <span
+                  className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${
+                    privacy.consentStatus === 'CONSENTED'
+                      ? 'bg-[#204735] text-[#10B981] border-[#10B981]/40'
+                      : 'bg-[#F87171]/20 text-[#F87171] border-[#F87171]/40'
+                  }`}
+                >
+                  {privacy.consentStatus === 'CONSENTED' ? 'ACTIVE CONSENT' : 'CONSENT WITHDRAWN'}
+                </span>
               </div>
-            ))
-          )}
+
+              <div className="flex items-center justify-between text-[11px]">
+                <span className="text-[#A7B8AE]">Biometric Profile</span>
+                <span className="text-[#F8FAFC] font-mono font-semibold">
+                  {privacy.biometricStatus === 'ACTIVE' ? 'AES-256 Vector' : 'Purged'}
+                </span>
+              </div>
+
+              <div className="flex items-center justify-between text-[11px]">
+                <span className="text-[#A7B8AE]">Processing Model</span>
+                <span className="text-[#6EE7B7] font-semibold">100% In-Browser</span>
+              </div>
+            </div>
+
+            <p className="text-[11px] text-[#A7B8AE] leading-tight">
+              Compliant with the Digital Personal Data Protection (DPDP) Act 2023. Video streams never leave this machine.
+            </p>
+          </div>
+
+          {/* Recent Notifications Widget */}
+          <div className="bg-[#17382B] border border-[#294638] rounded-3xl p-5 space-y-3">
+            <div className="flex items-center justify-between pb-2 border-b border-[#294638]">
+              <div className="flex items-center gap-2">
+                <Bell className="w-3.5 h-3.5 text-[#10B981]" />
+                <h3 className="text-xs font-bold uppercase tracking-wider text-[#F8FAFC]">
+                  Recent Notifications
+                </h3>
+              </div>
+              <button
+                onClick={() => handleNav('student-notifications')}
+                className="text-[11px] text-[#10B981] hover:underline"
+              >
+                View All
+              </button>
+            </div>
+
+            <div className="space-y-2">
+              {notifs.length === 0 ? (
+                <p className="text-xs text-[#A7B8AE] py-3 text-center">No notifications right now.</p>
+              ) : (
+                notifs.map((n: any) => (
+                  <div
+                    key={n.id}
+                    onClick={() => handleNav(n.link_tab || 'student-notifications')}
+                    className="p-2.5 bg-[#10231C] border border-[#294638] hover:border-[#10B981]/40 rounded-xl cursor-pointer transition text-xs space-y-1"
+                  >
+                    <div className="flex items-center justify-between">
+                      <span className="font-semibold text-[#F8FAFC]">{n.title}</span>
+                      <span className="text-[9px] text-[#A7B8AE] font-mono">{n.created_at?.slice(0, 10)}</span>
+                    </div>
+                    <p className="text-[11px] text-[#A7B8AE] line-clamp-2">{n.message}</p>
+                  </div>
+                ))
+              )}
+            </div>
+          </div>
         </div>
       </div>
     </div>

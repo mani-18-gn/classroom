@@ -34,7 +34,11 @@ export async function apiRequest<T = any>(endpoint: string, options: RequestInit
       const errorData = await response.json();
       errorMsg = errorData.error || errorMsg;
     } catch (e) {
-      // response wasn't JSON
+      if (response.status === 502 || response.status === 504) {
+        errorMsg = 'Cannot reach backend server. Please verify the ClassGuard AI server is running on port 5000.';
+      } else if (response.status === 503) {
+        errorMsg = 'ClassGuard AI backend is temporarily unavailable (HTTP 503).';
+      }
     }
     throw new Error(errorMsg);
   }

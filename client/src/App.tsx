@@ -16,6 +16,17 @@ import { LiveMonitoringPage } from './pages/LiveMonitoringPage';
 import { TeacherDashboard } from './pages/TeacherDashboard';
 import { AdminDashboard } from './pages/AdminDashboard';
 import { StudentDashboard } from './pages/StudentDashboard';
+import { StudentProfilePage } from './pages/StudentProfilePage';
+import { StudentClassroomPage } from './pages/StudentClassroomPage';
+import { StudentActivityRecordsPage } from './pages/StudentActivityRecordsPage';
+import { StudentActivityInsightsPage } from './pages/StudentActivityInsightsPage';
+import { StudentRequestReviewPage } from './pages/StudentRequestReviewPage';
+import { StudentPrivacyConsentPage } from './pages/StudentPrivacyConsentPage';
+import { StudentPrivacyRequestsPage } from './pages/StudentPrivacyRequestsPage';
+import { StudentDownloadDataPage } from './pages/StudentDownloadDataPage';
+import { StudentSecurityCenterPage } from './pages/StudentSecurityCenterPage';
+import { StudentNotificationsPage } from './pages/StudentNotificationsPage';
+import { StudentHelpSupportPage } from './pages/StudentHelpSupportPage';
 import { StudentRegistrationPage } from './pages/StudentRegistrationPage';
 import { ClassroomManagementPage } from './pages/ClassroomManagementPage';
 import { AlertsPage } from './pages/AlertsPage';
@@ -32,12 +43,27 @@ const MainApp: React.FC = () => {
   const { t } = useLanguage();
 
   // Navigation tab state
-  const [currentTab, setCurrentTab] = useState<string>('monitoring');
+  const [currentTab, setCurrentTab] = useState<string>('student-dashboard');
   const [selectedSessionId, setSelectedSessionId] = useState<number>(1);
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState<boolean>(false);
 
+  // Student portal filter states for cross-page navigation
+  const [recordsStatusFilter, setRecordsStatusFilter] = useState<string>('ALL');
+  const [selectedAppealEventId, setSelectedAppealEventId] = useState<number | undefined>(undefined);
+
   // Portal selection & auth screens state
   const [authView, setAuthView] = useState<'PORTAL_GATEWAY' | 'STUDENT_AUTH' | 'TEACHER_AUTH' | 'ADMIN_AUTH' | null>(null);
+
+  // Initial tab alignment based on role
+  React.useEffect(() => {
+    if (user?.role === 'STUDENT') {
+      setCurrentTab('student-dashboard');
+    } else if (user?.role === 'ADMIN') {
+      setCurrentTab('dashboard');
+    } else if (user?.role === 'TEACHER') {
+      setCurrentTab('monitoring');
+    }
+  }, [user?.role]);
 
   // Triggered when user clicks "Portals" or needs to switch
   const handleOpenPortalSelection = () => {
@@ -54,7 +80,7 @@ const MainApp: React.FC = () => {
     setAuthView(null);
     const effectiveRole = targetRole || user?.role;
     if (effectiveRole === 'STUDENT') {
-      setCurrentTab('dashboard');
+      setCurrentTab('student-dashboard');
     } else if (effectiveRole === 'ADMIN') {
       setCurrentTab('dashboard');
     } else {
@@ -141,21 +167,67 @@ const MainApp: React.FC = () => {
     );
   }
 
+  // Student Portal Navigation Handler
+  const handleStudentNavigate = (tab: string, filter?: string) => {
+    if (filter) {
+      setRecordsStatusFilter(filter);
+    }
+    setCurrentTab(tab);
+  };
+
+  const handleNavigateToAppeal = (eventId: number) => {
+    setSelectedAppealEventId(eventId);
+    setCurrentTab('student-request-review');
+  };
+
   // Render role-specific content based on active user role
   const renderContent = () => {
     // 1. STUDENT INTERFACE
     if (user?.role === 'STUDENT') {
       switch (currentTab) {
         case 'dashboard':
-          return <StudentDashboard />;
+        case 'student-dashboard':
+          return <StudentDashboard onNavigate={handleStudentNavigate} />;
+        case 'student-profile':
+          return <StudentProfilePage />;
+        case 'student-classroom':
+          return <StudentClassroomPage />;
+        case 'student-activity-records':
         case 'history':
-          return <EventHistoryPage />;
+          return (
+            <StudentActivityRecordsPage
+              initialStatusFilter={recordsStatusFilter}
+              onNavigateToAppeal={handleNavigateToAppeal}
+            />
+          );
+        case 'student-activity-insights':
+          return <StudentActivityInsightsPage />;
+        case 'student-request-review':
+          return <StudentRequestReviewPage initialEventId={selectedAppealEventId} />;
+        case 'student-privacy-consent':
         case 'privacy':
-          return <PrivacyCenterPage />;
+          return <StudentPrivacyConsentPage />;
+        case 'student-privacy-requests':
+          return <StudentPrivacyRequestsPage />;
+        case 'student-download-data':
+          return <StudentDownloadDataPage />;
+        case 'student-security-center':
+          return (
+            <StudentSecurityCenterPage
+              onNavigateToPrivacyRequest={() => setCurrentTab('student-privacy-requests')}
+            />
+          );
+        case 'student-notifications':
+          return (
+            <StudentNotificationsPage
+              onNavigateToTab={(targetTab) => setCurrentTab(targetTab)}
+            />
+          );
+        case 'student-help-support':
         case 'about':
-          return <HelpAboutPage />;
+          return <StudentHelpSupportPage />;
         default:
-          return <StudentDashboard />;
+          return <StudentDashboard onNavigate={handleStudentNavigate} />;
       }
     }
 

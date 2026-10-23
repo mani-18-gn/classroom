@@ -259,6 +259,48 @@ router.post('/:id/verify', authenticateToken, requireRole(['TEACHER', 'ADMIN']),
     if (newStatus === 'VERIFIED') {
       db.prepare('UPDATE monitoring_sessions SET verified_events_count = verified_events_count + 1 WHERE id = ?').run(event.session_id);
     }
+
+    // 4. If an appeal exists for this event, resolve it
+    const activeAppeal = db.prepare('SELECT id, student_id FROM review_appeals WHERE event_id = ? AND status IN (\'SUBMITTED\', \'UNDER_REVIEW\')').get(event.id);
+    if (activeAppeal) {
+      const appealDecision = decision === 'VERIFIED' ? 'CONFIRMED' : decision === 'FALSE_POSITIVE' ? 'DISMISSED' : 'CORRECTED';
+      db.prepare(`
+        UPDATE review_appeals
+        SET status = 'RESOLVED',
+            teacher_decision = ?,
+            teacher_notes = ?,
+            reviewed_by = ?,
+            reviewed_at = CURRENT_TIMESTAMP,
+            updated_at = CURRENT_TIMESTAMP
+        WHERE id = ?
+      `).run(appealDecision, finalReason, teacherName, activeAppeal.id);
+
+      // Fetch user_id for student
+      const studentUser = db.prepare('SELECT user_id FROM students WHERE id = ?').get(activeAppeal.student_id);
+      if (studentUser && studentUser.user_id) {
+        db.prepare(`
+          INSERT INTO notifications (user_id, student_id, type, title, message, link_tab)
+          VALUES (?, ?, 'APPEAL_UPDATE', 'Review Appeal Decision Recorded', ?, 'student-request-review')
+        `).run(
+          studentUser.user_id,
+          activeAppeal.student_id,
+          `Teacher ${teacherName} reviewed your appeal for observation #${event.id}: Marked as ${decision}. Teacher notes: "${finalReason}"`
+        );
+      }
+    } else if (event.student_id) {
+      // General teacher review notification
+      const studentUser = db.prepare('SELECT user_id FROM students WHERE id = ?').get(event.student_id);
+      if (studentUser && studentUser.user_id) {
+        db.prepare(`
+          INSERT INTO notifications (user_id, student_id, type, title, message, link_tab)
+          VALUES (?, ?, 'TEACHER_REVIEW', 'Observation Review Completed', ?, 'student-activity-records')
+        `).run(
+          studentUser.user_id,
+          event.student_id,
+          `Observation #${event.id} (${event.event_type.replace(/_/g, ' ')}) was reviewed by ${teacherName}: ${decision}.`
+        );
+      }
+    }
   });
 
   verifyTx();
