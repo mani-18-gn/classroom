@@ -128,8 +128,8 @@ db.exec(`
     session_id INTEGER REFERENCES monitoring_sessions(id) ON DELETE CASCADE,
     student_id INTEGER REFERENCES students(id) ON DELETE SET NULL,
     student_name_snapshot TEXT NOT NULL,
-    event_type TEXT CHECK(event_type IN ('PROLONGED_EYE_CLOSURE', 'CLASSROOM_DISTURBANCE', 'PHYSICAL_CONFLICT')) NOT NULL,
-    category TEXT CHECK(category IN ('ATTENTION', 'DISTURBANCE', 'SAFETY')) NOT NULL,
+    event_type TEXT CHECK(event_type IN ('PROLONGED_EYE_CLOSURE', 'PROLONGED_DISTRACTION', 'CLASSROOM_DISTURBANCE', 'PHYSICAL_CONFLICT')) NOT NULL,
+    category TEXT CHECK(category IN ('ATTENTION', 'ENGAGEMENT', 'DISTURBANCE', 'SAFETY')) NOT NULL,
     confidence_score REAL NOT NULL,
     duration_seconds REAL NOT NULL,
     verification_status TEXT DEFAULT 'PENDING' CHECK(verification_status IN ('PENDING', 'VERIFIED', 'REJECTED', 'NEEDS_REVIEW')),
@@ -188,6 +188,16 @@ db.exec(`
     notes TEXT,
     timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
   );
+
+  CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);
+  CREATE INDEX IF NOT EXISTS idx_users_username ON users(username);
+  CREATE INDEX IF NOT EXISTS idx_teachers_user_id ON teachers(user_id);
+  CREATE INDEX IF NOT EXISTS idx_students_user_id ON students(user_id);
+  CREATE INDEX IF NOT EXISTS idx_students_student_id ON students(student_id);
+  CREATE INDEX IF NOT EXISTS idx_detected_events_session_id ON detected_events(session_id);
+  CREATE INDEX IF NOT EXISTS idx_detected_events_student_id ON detected_events(student_id);
+  CREATE INDEX IF NOT EXISTS idx_event_snapshots_event_id ON event_snapshots(event_id);
+  CREATE INDEX IF NOT EXISTS idx_audit_logs_timestamp ON audit_logs(timestamp);
 `);
 
 // Safe column migrations for existing databases

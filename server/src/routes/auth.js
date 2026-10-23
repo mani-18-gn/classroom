@@ -6,19 +6,25 @@ const db = require('../db');
 const { JWT_SECRET, authenticateToken } = require('../middleware/auth');
 const { logAudit } = require('../middleware/audit');
 
+function isValidEmail(email) {
+  if (typeof email !== 'string') return false;
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
+}
+
 // Login
 router.post('/login', (req, res) => {
   const { identifier, password } = req.body;
-  if (!identifier || !password) {
+  if (!identifier || typeof identifier !== 'string' || !identifier.trim() || !password || typeof password !== 'string') {
     return res.status(400).json({ error: 'Username/Email and password are required.' });
   }
 
+  const cleanId = identifier.trim();
   const user = db.prepare(`
-    SELECT * FROM users WHERE email = ? OR username = ?
-  `).get(identifier, identifier);
+    SELECT * FROM users WHERE LOWER(email) = LOWER(?) OR LOWER(username) = LOWER(?)
+  `).get(cleanId, cleanId);
 
   if (!user || !bcrypt.compareSync(password, user.password_hash)) {
-    logAudit(null, identifier, 'GUEST', 'LOGIN_FAILED', 'USER', null, 'Invalid credentials provided', req.ip);
+    logAudit(null, cleanId, 'GUEST', 'LOGIN_FAILED', 'USER', null, 'Invalid credentials provided', req.ip);
     return res.status(401).json({ error: 'Invalid email/username or password.' });
   }
 
@@ -77,7 +83,7 @@ router.post('/demo-login', (req, res) => {
   }
 
   if (!targetUser) {
-    return res.status(404).json({ error: `Demo user for role ${role} not found` });
+    return res.status(404).json({ error: `Demo user for role ${role} not found in database.` });
   }
 
   let roleDetails = null;
@@ -149,18 +155,38 @@ router.post('/student/register', (req, res) => {
     username, email, password, fullName, studentId, rollNumber,
     className, section, phone, consentGranted, photo_data_url, face_descriptor
   } = req.body;
-  if (!username || !email || !password || !fullName || !studentId || !rollNumber) {
+
+  const cleanUsername = username?.trim();
+  const cleanEmail = email?.trim().toLowerCase();
+  const cleanFullName = fullName?.trim();
+  const cleanStudentId = studentId?.trim();
+  const cleanRollNumber = rollNumber?.trim();
+
+  if (!cleanUsername || !cleanEmail || !password || !cleanFullName || !cleanStudentId || !cleanRollNumber) {
     return res.status(400).json({ error: 'All mandatory student fields are required.' });
   }
 
-  const existing = db.prepare('SELECT id FROM users WHERE email = ? OR username = ?').get(email, username);
-  if (existing) {
-    return res.status(409).json({ error: 'Account with this email or username already exists.' });
+  if (!isValidEmail(cleanEmail)) {
+    return res.status(400).json({ error: 'Please enter a valid email address (e.g. student@institution.edu).' });
   }
 
-  const existingStudent = db.prepare('SELECT id FROM students WHERE student_id = ?').get(studentId);
+  if (typeof password !== 'string' || password.length < 6) {
+    return res.status(400).json({ error: 'Password must be at least 6 characters long.' });
+  }
+
+  const existingEmail = db.prepare('SELECT id FROM users WHERE LOWER(email) = LOWER(?)').get(cleanEmail);
+  if (existingEmail) {
+    return res.status(409).json({ error: 'An account with this email address already exists.' });
+  }
+
+  const existingUsername = db.prepare('SELECT id FROM users WHERE LOWER(username) = LOWER(?)').get(cleanUsername);
+  if (existingUsername) {
+    return res.status(409).json({ error: 'Username is already taken. Please choose another username.' });
+  }
+
+  const existingStudent = db.prepare('SELECT id FROM students WHERE LOWER(student_id) = LOWER(?)').get(cleanStudentId);
   if (existingStudent) {
-    return res.status(409).json({ error: `Student ID ${studentId} is already registered.` });
+    return res.status(409).json({ error: `Student ID / USN "${cleanStudentId}" is already registered.` });
   }
 
   const hash = bcrypt.hashSync(password, 10);
@@ -168,20 +194,20 @@ router.post('/student/register', (req, res) => {
     const userRes = db.prepare(`
       INSERT INTO users (username, email, password_hash, role, full_name)
       VALUES (?, ?, ?, 'STUDENT', ?)
-    `).run(username, email, hash, fullName);
+    `).run(cleanUsername, cleanEmail, hash, cleanFullName);
 
     const sRes = db.prepare(`
       INSERT INTO students (student_id, user_id, full_name, class_name, section, roll_number, email, phone, photo_data_url, face_descriptor, consent_status, is_demo)
       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0)
     `).run(
-      studentId,
+      cleanStudentId,
       userRes.lastInsertRowid,
-      fullName,
+      cleanFullName,
       className || '8th Semester CSE',
       section || 'A',
-      rollNumber,
-      email,
-      phone || null,
+      cleanRollNumber,
+      cleanEmail,
+      phone?.trim() || null,
       photo_data_url || null,
       face_descriptor ? (typeof face_descriptor === 'string' ? face_descriptor : JSON.stringify(face_descriptor)) : null,
       consentGranted ? 'CONSENTED' : 'PENDING'
@@ -191,10 +217,10 @@ router.post('/student/register', (req, res) => {
       db.prepare(`
         INSERT INTO consents (student_id, consent_type, granted_by, status, terms_version, ip_address)
         VALUES (?, 'CLASSROOM_SAFETY_ATTENTION_MONITORING', ?, 'ACTIVE', 'v1.4-PrivacyFirst', ?)
-      `).run(sRes.lastInsertRowid, `${fullName} (Self Registered)`, req.ip);
+      `).run(sRes.lastInsertRowid, `${cleanFullName} (Self Registered)`, req.ip);
 
       const crypto = require('crypto');
-      const secureHash = crypto.createHash('sha256').update(`${studentId}:${fullName}:${Date.now()}`).digest('hex');
+      const secureHash = crypto.createHash('sha256').update(`${cleanStudentId}:${cleanFullName}:${Date.now()}`).digest('hex');
       db.prepare(`
         INSERT INTO biometric_profiles (student_id, feature_vector_hash, feature_vector_encrypted, landmarks_template, quality_score, status)
         VALUES (?, ?, ?, ?, 0.95, 'ACTIVE')
@@ -212,29 +238,53 @@ router.post('/student/register', (req, res) => {
   const { userId, studentRecordId } = registerTx();
 
   const token = jwt.sign(
-    { id: userId, username, email, role: 'STUDENT', fullName, studentId: studentRecordId },
+    { id: userId, username: cleanUsername, email: cleanEmail, role: 'STUDENT', fullName: cleanFullName, studentId: studentRecordId },
     JWT_SECRET,
     { expiresIn: '12h' }
   );
 
-  logAudit(userId, fullName, 'STUDENT', 'STUDENT_SELF_REGISTERED', 'STUDENT', studentRecordId, `Student ${fullName} registered via Student Portal`, req.ip);
+  logAudit(userId, cleanFullName, 'STUDENT', 'STUDENT_SELF_REGISTERED', 'STUDENT', studentRecordId, `Student ${cleanFullName} registered via Student Portal`, req.ip);
 
   res.status(201).json({
     token,
-    user: { id: userId, username, email, role: 'STUDENT', fullName, studentId: studentRecordId }
+    user: { id: userId, username: cleanUsername, email: cleanEmail, role: 'STUDENT', fullName: cleanFullName, studentId: studentRecordId }
   });
 });
 
 // Dedicated Teacher Registration
 router.post('/teacher/register', (req, res) => {
   const { username, email, password, fullName, employeeId, department, phone } = req.body;
-  if (!username || !email || !password || !fullName || !employeeId) {
+
+  const cleanUsername = username?.trim();
+  const cleanEmail = email?.trim().toLowerCase();
+  const cleanFullName = fullName?.trim();
+  const cleanEmployeeId = employeeId?.trim();
+
+  if (!cleanUsername || !cleanEmail || !password || !cleanFullName || !cleanEmployeeId) {
     return res.status(400).json({ error: 'All mandatory teacher fields are required.' });
   }
 
-  const existing = db.prepare('SELECT id FROM users WHERE email = ? OR username = ?').get(email, username);
-  if (existing) {
-    return res.status(409).json({ error: 'Account with this email or username already exists.' });
+  if (!isValidEmail(cleanEmail)) {
+    return res.status(400).json({ error: 'Please enter a valid email address (e.g. teacher@institution.edu).' });
+  }
+
+  if (typeof password !== 'string' || password.length < 6) {
+    return res.status(400).json({ error: 'Password must be at least 6 characters long.' });
+  }
+
+  const existingEmail = db.prepare('SELECT id FROM users WHERE LOWER(email) = LOWER(?)').get(cleanEmail);
+  if (existingEmail) {
+    return res.status(409).json({ error: 'An account with this email address already exists.' });
+  }
+
+  const existingUsername = db.prepare('SELECT id FROM users WHERE LOWER(username) = LOWER(?)').get(cleanUsername);
+  if (existingUsername) {
+    return res.status(409).json({ error: 'Username is already taken. Please choose another username.' });
+  }
+
+  const existingTeacher = db.prepare('SELECT id FROM teachers WHERE LOWER(employee_id) = LOWER(?)').get(cleanEmployeeId);
+  if (existingTeacher) {
+    return res.status(409).json({ error: `Faculty Employee ID "${cleanEmployeeId}" is already registered.` });
   }
 
   const hash = bcrypt.hashSync(password, 10);
@@ -242,12 +292,12 @@ router.post('/teacher/register', (req, res) => {
     const userRes = db.prepare(`
       INSERT INTO users (username, email, password_hash, role, full_name)
       VALUES (?, ?, ?, 'TEACHER', ?)
-    `).run(username, email, hash, fullName);
+    `).run(cleanUsername, cleanEmail, hash, cleanFullName);
 
     const tRes = db.prepare(`
       INSERT INTO teachers (user_id, employee_id, full_name, department, phone)
       VALUES (?, ?, ?, ?, ?)
-    `).run(userRes.lastInsertRowid, employeeId, fullName, department || 'Computer Science & Engineering', phone || null);
+    `).run(userRes.lastInsertRowid, cleanEmployeeId, cleanFullName, department || 'Computer Science & Engineering', phone?.trim() || null);
 
     return { userId: userRes.lastInsertRowid, teacherRecordId: tRes.lastInsertRowid };
   });
@@ -255,55 +305,75 @@ router.post('/teacher/register', (req, res) => {
   const { userId, teacherRecordId } = registerTx();
 
   const token = jwt.sign(
-    { id: userId, username, email, role: 'TEACHER', fullName, teacherId: teacherRecordId },
+    { id: userId, username: cleanUsername, email: cleanEmail, role: 'TEACHER', fullName: cleanFullName, teacherId: teacherRecordId },
     JWT_SECRET,
     { expiresIn: '12h' }
   );
 
-  logAudit(userId, fullName, 'TEACHER', 'TEACHER_SELF_REGISTERED', 'TEACHER', teacherRecordId, `Teacher ${fullName} registered via Teacher Portal`, req.ip);
+  logAudit(userId, cleanFullName, 'TEACHER', 'TEACHER_SELF_REGISTERED', 'TEACHER', teacherRecordId, `Teacher ${cleanFullName} registered via Teacher Portal`, req.ip);
 
   res.status(201).json({
     token,
-    user: { id: userId, username, email, role: 'TEACHER', fullName, teacherId: teacherRecordId }
+    user: { id: userId, username: cleanUsername, email: cleanEmail, role: 'TEACHER', fullName: cleanFullName, teacherId: teacherRecordId }
   });
 });
 
 // Dedicated Super Admin Registration
 router.post('/admin/register', (req, res) => {
   const { username, email, password, fullName, adminPasscode, institutionId } = req.body;
-  if (!username || !email || !password || !fullName) {
-    return res.status(400).json({ error: 'All mandatory fields are required.' });
+
+  const cleanUsername = username?.trim();
+  const cleanEmail = email?.trim().toLowerCase();
+  const cleanFullName = fullName?.trim();
+
+  if (!cleanUsername || !cleanEmail || !password || !cleanFullName) {
+    return res.status(400).json({ error: 'All mandatory admin fields are required.' });
   }
 
-  // Master institutional admin authorization security check
-  if (adminPasscode !== 'ADMIN2026' && adminPasscode !== 'MASTER_ADMIN') {
-    return res.status(403).json({ error: 'Invalid Institutional Admin Clearance Passcode. (Hint: ADMIN2026)' });
+  // Master institutional admin authorization security check (configurable via ADMIN_PASSCODE env or default ADMIN2026)
+  const expectedPasscode = process.env.ADMIN_PASSCODE || 'ADMIN2026';
+  if (adminPasscode !== expectedPasscode && adminPasscode !== 'MASTER_ADMIN') {
+    return res.status(403).json({ error: 'Invalid Institutional Admin Clearance Passcode.' });
   }
 
-  const existing = db.prepare('SELECT id FROM users WHERE email = ? OR username = ?').get(email, username);
-  if (existing) {
-    return res.status(409).json({ error: 'Account with this email or username already exists.' });
+  if (!isValidEmail(cleanEmail)) {
+    return res.status(400).json({ error: 'Please enter a valid email address (e.g. admin@institution.edu).' });
+  }
+
+  if (typeof password !== 'string' || password.length < 6) {
+    return res.status(400).json({ error: 'Password must be at least 6 characters long.' });
+  }
+
+  const existingEmail = db.prepare('SELECT id FROM users WHERE LOWER(email) = LOWER(?)').get(cleanEmail);
+  if (existingEmail) {
+    return res.status(409).json({ error: 'An account with this email address already exists.' });
+  }
+
+  const existingUsername = db.prepare('SELECT id FROM users WHERE LOWER(username) = LOWER(?)').get(cleanUsername);
+  if (existingUsername) {
+    return res.status(409).json({ error: 'Username is already taken. Please choose another username.' });
   }
 
   const hash = bcrypt.hashSync(password, 10);
   const userRes = db.prepare(`
     INSERT INTO users (username, email, password_hash, role, full_name, institution_id)
     VALUES (?, ?, ?, 'ADMIN', ?, ?)
-  `).run(username, email, hash, fullName, institutionId || 'INST-VTU-01');
+  `).run(cleanUsername, cleanEmail, hash, cleanFullName, institutionId?.trim() || 'INST-VTU-01');
 
   const token = jwt.sign(
-    { id: userRes.lastInsertRowid, username, email, role: 'ADMIN', fullName },
+    { id: userRes.lastInsertRowid, username: cleanUsername, email: cleanEmail, role: 'ADMIN', fullName: cleanFullName },
     JWT_SECRET,
     { expiresIn: '12h' }
   );
 
-  logAudit(userRes.lastInsertRowid, fullName, 'ADMIN', 'ADMIN_REGISTERED', 'USER', userRes.lastInsertRowid, `Super Admin ${fullName} registered with verified passcode`, req.ip);
+  logAudit(userRes.lastInsertRowid, cleanFullName, 'ADMIN', 'ADMIN_REGISTERED', 'USER', userRes.lastInsertRowid, `Super Admin ${cleanFullName} registered with verified clearance passcode`, req.ip);
 
   res.status(201).json({
     token,
-    user: { id: userRes.lastInsertRowid, username, email, role: 'ADMIN', fullName, institutionId: institutionId || 'INST-VTU-01' }
+    user: { id: userRes.lastInsertRowid, username: cleanUsername, email: cleanEmail, role: 'ADMIN', fullName: cleanFullName, institutionId: institutionId?.trim() || 'INST-VTU-01' }
   });
 });
 
 module.exports = router;
+
 
