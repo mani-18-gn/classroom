@@ -1,5 +1,23 @@
 @import "tailwindcss";
 
+@theme {
+  --color-forest-main: #0B1713;
+  --color-forest-sidebar: #10231C;
+  --color-forest-card: #17382B;
+  --color-forest-elevated: #204735;
+  --color-forest-border: #294638;
+  --color-forest-border-subtle: #1e3d2f;
+  --color-forest-hover: #1b3d30;
+  --color-emerald-primary: #10B981;
+  --color-emerald-hover: #059669;
+  --color-mint-accent: #6EE7B7;
+  --color-forest-text: #F8FAFC;
+  --color-forest-muted: #A7B8AE;
+  --color-forest-success: #22C55E;
+  --color-forest-warning: #FBBF24;
+  --color-forest-danger: #F87171;
+}
+
 @layer base {
   * {
     box-sizing: border-box;
@@ -8,8 +26,8 @@
   }
 
   body {
-    background-color: #020617;
-    color: #f8fafc;
+    background-color: #0B1713;
+    color: #F8FAFC;
     font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
     min-height: 100vh;
     -webkit-font-smoothing: antialiased;
@@ -20,23 +38,24 @@
     min-height: 100vh;
     display: flex;
     flex-direction: column;
+    background-color: #0B1713;
   }
 }
 
-/* Custom Scrollbar */
+/* Custom Scrollbar - Dark Forest & Emerald */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: #0f172a;
+  background: #10231C;
 }
 ::-webkit-scrollbar-thumb {
-  background: #334155;
+  background: #294638;
   border-radius: 9999px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #475569;
+  background: #10B981;
 }
 
 /* Hide scrollbar utility */
@@ -46,6 +65,30 @@
 .no-scrollbar {
   -ms-overflow-style: none;
   scrollbar-width: none;
+}
+
+/* Global utility tokens for Emerald/Forest Theme */
+.card-forest {
+  background-color: #17382B;
+  border: 1px solid #294638;
+  border-radius: 0.75rem;
+}
+
+.panel-forest {
+  background-color: #204735;
+  border: 1px solid #294638;
+}
+
+.input-forest {
+  background-color: #10231C;
+  border: 1px solid #294638;
+  color: #F8FAFC;
+  outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+.input-forest:focus {
+  border-color: #10B981;
+  box-shadow: 0 0 0 1px #10B981;
 }
 
 @media print {

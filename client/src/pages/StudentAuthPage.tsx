@@ -212,35 +212,35 @@ export const StudentAuthPage: React.FC<StudentAuthPageProps> = ({
 
   return (
     <div className="min-h-[85vh] flex items-center justify-center p-4">
-      <div className="max-w-md w-full bg-slate-900 border border-emerald-500/30 rounded-3xl p-6 sm:p-8 shadow-2xl space-y-6 relative overflow-hidden">
+      <div className="max-w-md w-full bg-[#17382B] border border-[#294638] rounded-3xl p-6 sm:p-8 shadow-2xl space-y-6 relative overflow-hidden">
         {/* Glow decoration */}
-        <div className="absolute -top-10 -right-10 w-32 h-32 bg-emerald-500/10 rounded-full blur-2xl pointer-events-none" />
+        <div className="absolute -top-10 -right-10 w-32 h-32 bg-[#10B981]/10 rounded-full blur-2xl pointer-events-none" />
 
         {/* Back Button */}
         <button
           onClick={onBackToPortalSelection}
-          className="text-xs text-slate-400 hover:text-white flex items-center gap-1.5 transition"
+          className="text-xs text-[#A7B8AE] hover:text-[#F8FAFC] flex items-center gap-1.5 transition"
         >
           <ArrowLeft className="w-3.5 h-3.5" /> Back to Portal Selection
         </button>
 
         {/* Portal Header */}
         <div className="text-center space-y-1">
-          <div className="w-12 h-12 bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 rounded-2xl mx-auto flex items-center justify-center shadow-inner">
+          <div className="w-12 h-12 bg-[#10231C] text-[#10B981] border border-[#294638] rounded-2xl mx-auto flex items-center justify-center shadow-inner">
             <GraduationCap className="w-6 h-6" />
           </div>
-          <h2 className="text-xl font-bold text-white tracking-tight">Student Privacy Portal</h2>
-          <p className="text-xs text-slate-400">
+          <h2 className="text-xl font-bold text-[#F8FAFC] tracking-tight">Student Privacy Portal</h2>
+          <p className="text-xs text-[#A7B8AE]">
             {mode === 'LOGIN' ? 'Sign in to inspect your consent and verified records' : 'Register your student profile with consent'}
           </p>
         </div>
 
         {/* Mode Switcher Tabs */}
-        <div className="flex bg-slate-950 p-1 rounded-xl border border-slate-800 text-xs font-semibold">
+        <div className="flex bg-[#10231C] p-1 rounded-xl border border-[#294638] text-xs font-semibold">
           <button
             onClick={() => setMode('LOGIN')}
             className={`flex-1 py-1.5 rounded-lg transition ${
-              mode === 'LOGIN' ? 'bg-emerald-600 text-white shadow' : 'text-slate-400 hover:text-white'
+              mode === 'LOGIN' ? 'bg-[#10B981] text-white shadow' : 'text-[#A7B8AE] hover:text-[#F8FAFC]'
             }`}
           >
             Student Login
@@ -248,7 +248,7 @@ export const StudentAuthPage: React.FC<StudentAuthPageProps> = ({
           <button
             onClick={() => setMode('REGISTER')}
             className={`flex-1 py-1.5 rounded-lg transition ${
-              mode === 'REGISTER' ? 'bg-emerald-600 text-white shadow' : 'text-slate-400 hover:text-white'
+              mode === 'REGISTER' ? 'bg-[#10B981] text-white shadow' : 'text-[#A7B8AE] hover:text-[#F8FAFC]'
             }`}
           >
             Student Register
@@ -256,7 +256,7 @@ export const StudentAuthPage: React.FC<StudentAuthPageProps> = ({
         </div>
 
         {errorMessage && (
-          <div className="p-3 bg-rose-500/15 border border-rose-500/30 rounded-xl text-xs text-rose-300 flex items-center gap-2">
+          <div className="p-3 bg-[#F87171]/15 border border-[#F87171]/40 rounded-xl text-xs text-[#F87171] flex items-center gap-2">
             <AlertCircle className="w-4 h-4 flex-shrink-0" />
             <span>{errorMessage}</span>
           </div>
@@ -266,33 +266,33 @@ export const StudentAuthPage: React.FC<StudentAuthPageProps> = ({
         {mode === 'LOGIN' ? (
           <form onSubmit={handleLoginSubmit} className="space-y-4">
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1">
+              <label className="block text-xs font-semibold text-[#A7B8AE] mb-1">
                 Student Email / ID / Username
               </label>
               <div className="relative">
-                <Mail className="w-4 h-4 text-slate-500 absolute left-3 top-2.5" />
+                <Mail className="w-4 h-4 text-[#A7B8AE]/60 absolute left-3 top-2.5" />
                 <input
                   type="text"
                   required
                   value={loginIdentifier}
                   onChange={(e) => setLoginIdentifier(e.target.value)}
                   placeholder="Enter email, student ID, or username"
-                  className="w-full bg-slate-950 border border-slate-700 rounded-xl pl-9 pr-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-emerald-500"
+                  className="w-full bg-[#10231C] border border-[#294638] rounded-xl pl-9 pr-3 py-2 text-xs text-[#F8FAFC] placeholder-[#A7B8AE]/50 focus:outline-none focus:border-[#10B981]"
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1">Password</label>
+              <label className="block text-xs font-semibold text-[#A7B8AE] mb-1">Password</label>
               <div className="relative">
-                <Lock className="w-4 h-4 text-slate-500 absolute left-3 top-2.5" />
+                <Lock className="w-4 h-4 text-[#A7B8AE]/60 absolute left-3 top-2.5" />
                 <input
                   type="password"
                   required
                   value={loginPassword}
                   onChange={(e) => setLoginPassword(e.target.value)}
                   placeholder="Enter your password"
-                  className="w-full bg-slate-950 border border-slate-700 rounded-xl pl-9 pr-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-emerald-500"
+                  className="w-full bg-[#10231C] border border-[#294638] rounded-xl pl-9 pr-3 py-2 text-xs text-[#F8FAFC] placeholder-[#A7B8AE]/50 focus:outline-none focus:border-[#10B981]"
                 />
               </div>
             </div>
@@ -300,7 +300,7 @@ export const StudentAuthPage: React.FC<StudentAuthPageProps> = ({
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 text-white font-bold py-2.5 rounded-xl text-xs transition shadow-lg flex items-center justify-center gap-1.5"
+              className="w-full bg-[#10B981] hover:bg-[#059669] disabled:opacity-50 text-white font-bold py-2.5 rounded-xl text-xs transition shadow-lg flex items-center justify-center gap-1.5"
             >
               <span>{loading ? 'Authenticating...' : 'Sign In as Student'}</span>
               <ArrowRight className="w-4 h-4" />
@@ -310,20 +310,20 @@ export const StudentAuthPage: React.FC<StudentAuthPageProps> = ({
           /* Mode: REGISTER */
           <form onSubmit={handleRegisterSubmit} className="space-y-3 text-xs max-h-[520px] overflow-y-auto pr-1">
             {/* Student Facial Photo Enrollment Section */}
-            <div className="bg-slate-950 border border-slate-800 rounded-2xl p-3.5 space-y-3">
+            <div className="bg-[#10231C] border border-[#294638] rounded-2xl p-3.5 space-y-3">
               <div>
-                <label className="block font-bold text-slate-200 text-xs">Student Facial Photo</label>
-                <p className="text-[11px] text-slate-400">Capture with your webcam or upload a photo to enable classroom AI recognition.</p>
+                <label className="block font-bold text-[#F8FAFC] text-xs">Student Facial Photo</label>
+                <p className="text-[11px] text-[#A7B8AE]">Capture with your webcam or upload a photo to enable classroom AI recognition.</p>
               </div>
 
               {cameraError && (
-                <div className="p-2 bg-amber-500/10 border border-amber-500/30 rounded-xl text-[11px] text-amber-200">
+                <div className="p-2 bg-[#FBBF24]/15 border border-[#FBBF24]/30 rounded-xl text-[11px] text-[#FBBF24]">
                   {cameraError}
                 </div>
               )}
 
               <div className="flex items-center gap-3">
-                <div className="w-28 h-28 bg-slate-900 border border-slate-700 rounded-xl flex items-center justify-center overflow-hidden relative shadow-inner flex-shrink-0">
+                <div className="w-28 h-28 bg-[#0B1713] border border-[#294638] rounded-xl flex items-center justify-center overflow-hidden relative shadow-inner flex-shrink-0">
                   {capturedPhoto ? (
                     <img src={capturedPhoto} alt="Student Preview" className="w-full h-full object-cover" />
                   ) : (
@@ -336,8 +336,8 @@ export const StudentAuthPage: React.FC<StudentAuthPageProps> = ({
                         className={`w-full h-full object-cover transform -scale-x-100 ${cameraActive ? 'block' : 'hidden'}`}
                       />
                       {!cameraActive && (
-                        <div className="flex flex-col items-center justify-center text-slate-500 text-[10px] text-center p-1">
-                          <Camera className="w-6 h-6 mb-1 opacity-40" />
+                        <div className="flex flex-col items-center justify-center text-[#A7B8AE] text-[10px] text-center p-1">
+                          <Camera className="w-6 h-6 mb-1 opacity-40 text-[#6EE7B7]" />
                           <span>No Photo</span>
                         </div>
                       )}
@@ -352,16 +352,16 @@ export const StudentAuthPage: React.FC<StudentAuthPageProps> = ({
                       <button
                         type="button"
                         onClick={startCamera}
-                        className="bg-emerald-600 hover:bg-emerald-500 text-white font-semibold px-2.5 py-1.5 rounded-lg text-[11px] flex items-center gap-1 shadow"
+                        className="bg-[#10B981] hover:bg-[#059669] text-white font-semibold px-2.5 py-1.5 rounded-lg text-[11px] flex items-center gap-1 shadow transition"
                       >
                         <Video className="w-3.5 h-3.5" /> Start Webcam
                       </button>
                       <button
                         type="button"
                         onClick={() => fileInputRef.current?.click()}
-                        className="bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold px-2.5 py-1.5 rounded-lg text-[11px] border border-slate-700 flex items-center gap-1"
+                        className="bg-[#204735] hover:bg-[#17382B] text-[#F8FAFC] font-semibold px-2.5 py-1.5 rounded-lg text-[11px] border border-[#294638] flex items-center gap-1 transition"
                       >
-                        <Upload className="w-3.5 h-3.5" /> Upload File
+                        <Upload className="w-3.5 h-3.5 text-[#6EE7B7]" /> Upload File
                       </button>
                     </div>
                   )}
@@ -371,14 +371,14 @@ export const StudentAuthPage: React.FC<StudentAuthPageProps> = ({
                       <button
                         type="button"
                         onClick={captureFrame}
-                        className="bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-3 py-1.5 rounded-lg text-[11px] flex items-center gap-1 shadow animate-pulse"
+                        className="bg-[#10B981] hover:bg-[#059669] text-white font-bold px-3 py-1.5 rounded-lg text-[11px] flex items-center gap-1 shadow animate-pulse"
                       >
                         <Camera className="w-3.5 h-3.5" /> Snap Photo
                       </button>
                       <button
                         type="button"
                         onClick={stopCamera}
-                        className="bg-slate-800 hover:bg-slate-700 text-slate-400 font-medium px-2 py-1.5 rounded-lg text-[11px]"
+                        className="bg-[#204735] hover:bg-[#17382B] text-[#A7B8AE] font-medium px-2 py-1.5 rounded-lg text-[11px] border border-[#294638]"
                       >
                         Cancel
                       </button>
@@ -387,21 +387,21 @@ export const StudentAuthPage: React.FC<StudentAuthPageProps> = ({
 
                   {capturedPhoto && (
                     <div className="space-y-1.5">
-                      <span className="text-[11px] text-emerald-400 font-medium flex items-center gap-1">
+                      <span className="text-[11px] text-[#6EE7B7] font-medium flex items-center gap-1">
                         <CheckCircle2 className="w-3.5 h-3.5" /> Photo Attached
                       </span>
                       <div className="flex gap-2">
                         <button
                           type="button"
                           onClick={() => { setCapturedPhoto(null); startCamera(); }}
-                          className="bg-slate-800 hover:bg-slate-700 text-slate-300 px-2 py-1 rounded text-[10px] flex items-center gap-1 border border-slate-700"
+                          className="bg-[#204735] hover:bg-[#17382B] text-[#F8FAFC] px-2 py-1 rounded text-[10px] flex items-center gap-1 border border-[#294638] transition"
                         >
                           <RefreshCw className="w-3 h-3" /> Retake
                         </button>
                         <button
                           type="button"
                           onClick={() => { setCapturedPhoto(null); stopCamera(); }}
-                          className="bg-rose-500/20 hover:bg-rose-500/30 text-rose-300 px-2 py-1 rounded text-[10px] flex items-center gap-1 border border-rose-500/30"
+                          className="bg-[#F87171]/20 hover:bg-[#F87171]/30 text-[#F87171] px-2 py-1 rounded text-[10px] flex items-center gap-1 border border-[#F87171]/30 transition"
                         >
                           <Trash2 className="w-3 h-3" /> Remove
                         </button>
@@ -421,127 +421,127 @@ export const StudentAuthPage: React.FC<StudentAuthPageProps> = ({
             </div>
 
             <div>
-              <label className="block font-semibold text-slate-300 mb-1">Full Name *</label>
+              <label className="block font-semibold text-[#A7B8AE] mb-1">Full Name <span className="text-[#F87171]">*</span></label>
               <input
                 type="text"
                 required
                 value={fullName}
                 onChange={(e) => setFullName(e.target.value)}
                 placeholder="Enter full name"
-                className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-1.5 text-slate-200 focus:outline-none focus:border-emerald-500"
+                className="w-full bg-[#10231C] border border-[#294638] rounded-xl px-3 py-1.5 text-[#F8FAFC] placeholder-[#A7B8AE]/50 focus:outline-none focus:border-[#10B981]"
               />
             </div>
 
             <div className="grid grid-cols-2 gap-2">
               <div>
-                <label className="block font-semibold text-slate-300 mb-1">Student ID (USN) *</label>
+                <label className="block font-semibold text-[#A7B8AE] mb-1">Student ID (USN) <span className="text-[#F87171]">*</span></label>
                 <input
                   type="text"
                   required
                   value={studentId}
                   onChange={(e) => setStudentId(e.target.value)}
                   placeholder="Enter student ID or USN"
-                  className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-1.5 text-slate-200 focus:outline-none focus:border-emerald-500"
+                  className="w-full bg-[#10231C] border border-[#294638] rounded-xl px-3 py-1.5 text-[#F8FAFC] placeholder-[#A7B8AE]/50 focus:outline-none focus:border-[#10B981]"
                 />
               </div>
               <div>
-                <label className="block font-semibold text-slate-300 mb-1">Roll Number *</label>
+                <label className="block font-semibold text-[#A7B8AE] mb-1">Roll Number <span className="text-[#F87171]">*</span></label>
                 <input
                   type="text"
                   required
                   value={rollNumber}
                   onChange={(e) => setRollNumber(e.target.value)}
                   placeholder="Enter roll number"
-                  className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-1.5 text-slate-200 focus:outline-none focus:border-emerald-500"
+                  className="w-full bg-[#10231C] border border-[#294638] rounded-xl px-3 py-1.5 text-[#F8FAFC] placeholder-[#A7B8AE]/50 focus:outline-none focus:border-[#10B981]"
                 />
               </div>
             </div>
 
             <div className="grid grid-cols-2 gap-2">
               <div>
-                <label className="block font-semibold text-slate-300 mb-1">Class *</label>
+                <label className="block font-semibold text-[#A7B8AE] mb-1">Class <span className="text-[#F87171]">*</span></label>
                 <input
                   type="text"
                   required
                   value={className}
                   onChange={(e) => setClassName(e.target.value)}
                   placeholder="8th Semester CSE"
-                  className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-1.5 text-slate-200 focus:outline-none focus:border-emerald-500"
+                  className="w-full bg-[#10231C] border border-[#294638] rounded-xl px-3 py-1.5 text-[#F8FAFC] placeholder-[#A7B8AE]/50 focus:outline-none focus:border-[#10B981]"
                 />
               </div>
               <div>
-                <label className="block font-semibold text-slate-300 mb-1">Section *</label>
+                <label className="block font-semibold text-[#A7B8AE] mb-1">Section <span className="text-[#F87171]">*</span></label>
                 <input
                   type="text"
                   required
                   value={section}
                   onChange={(e) => setSection(e.target.value)}
                   placeholder="A"
-                  className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-1.5 text-slate-200 focus:outline-none focus:border-emerald-500"
+                  className="w-full bg-[#10231C] border border-[#294638] rounded-xl px-3 py-1.5 text-[#F8FAFC] placeholder-[#A7B8AE]/50 focus:outline-none focus:border-[#10B981]"
                 />
               </div>
             </div>
 
             <div className="grid grid-cols-2 gap-2">
               <div>
-                <label className="block font-semibold text-slate-300 mb-1">Username *</label>
+                <label className="block font-semibold text-[#A7B8AE] mb-1">Username <span className="text-[#F87171]">*</span></label>
                 <input
                   type="text"
                   required
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
                   placeholder="Choose a username"
-                  className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-1.5 text-slate-200 focus:outline-none focus:border-emerald-500"
+                  className="w-full bg-[#10231C] border border-[#294638] rounded-xl px-3 py-1.5 text-[#F8FAFC] placeholder-[#A7B8AE]/50 focus:outline-none focus:border-[#10B981]"
                 />
               </div>
               <div>
-                <label className="block font-semibold text-slate-300 mb-1">Password *</label>
+                <label className="block font-semibold text-[#A7B8AE] mb-1">Password <span className="text-[#F87171]">*</span></label>
                 <input
                   type="password"
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="Min 6 characters"
-                  className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-1.5 text-slate-200 focus:outline-none focus:border-emerald-500"
+                  className="w-full bg-[#10231C] border border-[#294638] rounded-xl px-3 py-1.5 text-[#F8FAFC] placeholder-[#A7B8AE]/50 focus:outline-none focus:border-[#10B981]"
                 />
               </div>
             </div>
 
             <div className="grid grid-cols-2 gap-2">
               <div>
-                <label className="block font-semibold text-slate-300 mb-1">Email Address *</label>
+                <label className="block font-semibold text-[#A7B8AE] mb-1">Email Address <span className="text-[#F87171]">*</span></label>
                 <input
                   type="email"
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="student@example.com"
-                  className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-1.5 text-slate-200 focus:outline-none focus:border-emerald-500"
+                  className="w-full bg-[#10231C] border border-[#294638] rounded-xl px-3 py-1.5 text-[#F8FAFC] placeholder-[#A7B8AE]/50 focus:outline-none focus:border-[#10B981]"
                 />
               </div>
               <div>
-                <label className="block font-semibold text-slate-300 mb-1">Phone Number</label>
+                <label className="block font-semibold text-[#A7B8AE] mb-1">Phone Number</label>
                 <input
                   type="tel"
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
                   placeholder="+91 98765 43210"
-                  className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-1.5 text-slate-200 focus:outline-none focus:border-emerald-500"
+                  className="w-full bg-[#10231C] border border-[#294638] rounded-xl px-3 py-1.5 text-[#F8FAFC] placeholder-[#A7B8AE]/50 focus:outline-none focus:border-[#10B981]"
                 />
               </div>
             </div>
 
             {/* Consent check */}
-            <div className="bg-slate-950 p-2.5 rounded-xl border border-slate-800 space-y-1">
+            <div className="bg-[#10231C] p-2.5 rounded-xl border border-[#294638] space-y-1">
               <label className="flex items-start gap-2 cursor-pointer">
                 <input
                   type="checkbox"
                   required
                   checked={consentGranted}
                   onChange={(e) => setConsentGranted(e.target.checked)}
-                  className="accent-emerald-500 mt-0.5"
+                  className="accent-[#10B981] mt-0.5"
                 />
-                <span className="text-[11px] text-slate-300 leading-tight">
+                <span className="text-[11px] text-[#A7B8AE] leading-tight">
                   I give explicit consent to enroll my facial landmark template for classroom safety assistance. I understand I can withdraw consent anytime.
                 </span>
               </label>
@@ -550,7 +550,7 @@ export const StudentAuthPage: React.FC<StudentAuthPageProps> = ({
             <button
               type="submit"
               disabled={loading || !consentGranted}
-              className="w-full bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 text-white font-bold py-2.5 rounded-xl text-xs transition shadow-lg flex items-center justify-center gap-1.5"
+              className="w-full bg-[#10B981] hover:bg-[#059669] disabled:opacity-50 text-white font-bold py-2.5 rounded-xl text-xs transition shadow-lg flex items-center justify-center gap-1.5"
             >
               <span>{loading ? 'Creating Student Account...' : 'Complete Student Registration'}</span>
               <CheckCircle2 className="w-4 h-4" />

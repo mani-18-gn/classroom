@@ -458,61 +458,61 @@ export const CameraFeed: React.FC<CameraFeedProps> = ({
   return (
     <div className="space-y-4">
       {/* Video Feed Card */}
-      <div className="bg-slate-900 border border-slate-800 rounded-3xl overflow-hidden shadow-2xl relative">
+      <div className="bg-[#10231C] border border-[#294638] rounded-3xl overflow-hidden shadow-sm relative">
         {/* HUD Top Status Bar */}
-        <div className="absolute top-0 inset-x-0 bg-gradient-to-b from-slate-950/90 to-transparent p-4 z-20 flex items-center justify-between">
+        <div className="absolute top-0 inset-x-0 bg-gradient-to-b from-[#0B1713]/90 to-transparent p-4 z-20 flex items-center justify-between">
           <div className="flex items-center space-x-2">
             <span
               className={`w-3 h-3 rounded-full ${
                 monitoringStatus === 'MONITORING'
-                  ? 'bg-emerald-500 animate-pulse'
+                  ? 'bg-[#10B981] animate-pulse shadow-sm shadow-[#10B981]/50'
                   : monitoringStatus === 'PAUSED'
-                  ? 'bg-amber-500'
-                  : 'bg-slate-500'
+                  ? 'bg-[#FBBF24]'
+                  : 'bg-[#A7B8AE]'
               }`}
             />
-            <span className="text-xs font-bold text-white uppercase tracking-wider">
+            <span className="text-xs font-bold text-[#F8FAFC] uppercase tracking-wider">
               {monitoringStatus === 'MONITORING'
                 ? t.camera.monitoringActive
                 : monitoringStatus === 'PAUSED'
                 ? t.camera.monitoringPaused
                 : t.camera.monitoringIdle}
             </span>
-            <span className="text-slate-500">•</span>
-            <span className="text-xs text-slate-300 font-medium hidden sm:inline">{classroomName}</span>
+            <span className="text-[#294638]">•</span>
+            <span className="text-xs text-[#A7B8AE] font-medium hidden sm:inline">{classroomName}</span>
           </div>
 
           <div className="flex items-center space-x-2.5 text-xs">
-            <div className="bg-slate-800/90 backdrop-blur-md px-3 py-1 rounded-full border border-blue-500/40 text-slate-200 font-mono flex items-center gap-1.5 shadow">
-              <Users className="w-3.5 h-3.5 text-blue-400" />
-              <span>Students in Frame: <strong className="text-blue-400">{visibleCount}</strong></span>
+            <div className="bg-[#17382B]/90 backdrop-blur-md px-3 py-1 rounded-full border border-[#294638] text-[#F8FAFC] font-mono flex items-center gap-1.5 shadow-xs">
+              <Users className="w-3.5 h-3.5 text-[#10B981]" />
+              <span>Students in Frame: <strong className="text-[#6EE7B7]">{visibleCount}</strong></span>
             </div>
-            <div className="bg-slate-800/90 backdrop-blur-md px-3 py-1 rounded-full border border-amber-500/40 text-slate-200 font-mono shadow">
-              Alerts: <strong className="text-amber-400">{potentialEventsCount}</strong>
+            <div className="bg-[#17382B]/90 backdrop-blur-md px-3 py-1 rounded-full border border-[#294638] text-[#F8FAFC] font-mono shadow-xs">
+              Alerts: <strong className="text-[#FBBF24]">{potentialEventsCount}</strong>
             </div>
-            <div className="hidden md:flex items-center gap-1.5 bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 px-2.5 py-1 rounded-full text-[10px] font-semibold">
-              <ShieldCheck className="w-3 h-3" /> Zero Cloud Video
+            <div className="hidden md:flex items-center gap-1.5 bg-[#204735] text-[#6EE7B7] border border-[#294638] px-2.5 py-1 rounded-full text-[10px] font-semibold">
+              <ShieldCheck className="w-3 h-3 text-[#10B981]" /> Zero Cloud Video
             </div>
           </div>
         </div>
 
         {/* Camera Error or Diagnostic Banner */}
         {cameraError && (
-          <div className="bg-amber-500/15 border-b border-amber-500/30 p-3 px-5 flex items-center justify-between text-xs text-amber-200 backdrop-blur-sm flex-wrap gap-2">
+          <div className="bg-[#FBBF24]/15 border-b border-[#FBBF24]/30 p-3 px-5 flex items-center justify-between text-xs text-[#FBBF24] backdrop-blur-sm flex-wrap gap-2">
             <div className="flex items-center gap-2">
-              <AlertTriangle className="w-4 h-4 text-amber-400 flex-shrink-0" />
+              <AlertTriangle className="w-4 h-4 text-[#FBBF24] flex-shrink-0" />
               <span><strong>Webcam Notice:</strong> {cameraError}</span>
             </div>
             <div className="flex items-center gap-2">
               <button
                 onClick={startCamera}
-                className="bg-blue-600 hover:bg-blue-500 text-white font-bold px-2.5 py-1 rounded-lg text-[11px] shadow transition"
+                className="bg-[#10B981] hover:bg-[#059669] text-[#0B1713] font-bold px-3 py-1 rounded-lg text-[11px] shadow-xs transition"
               >
                 Retry Camera
               </button>
               <button
                 onClick={() => setCameraError(null)}
-                className="text-[11px] text-slate-400 hover:text-white"
+                className="text-[11px] text-[#A7B8AE] hover:text-[#F8FAFC]"
               >
                 Dismiss
               </button>
@@ -521,7 +521,7 @@ export const CameraFeed: React.FC<CameraFeedProps> = ({
         )}
 
         {/* Video & Canvas Overlay Element */}
-        <div className="relative w-full aspect-video bg-slate-950 flex items-center justify-center overflow-hidden">
+        <div className="relative w-full aspect-video bg-[#0B1713] flex items-center justify-center overflow-hidden">
           <video
             ref={videoRef}
             playsInline
@@ -537,14 +537,14 @@ export const CameraFeed: React.FC<CameraFeedProps> = ({
 
           {/* Fallback Screen if Camera Off */}
           {!isStreaming && (
-            <div className="absolute inset-0 flex flex-col items-center justify-center bg-slate-950/90 text-slate-400 p-6 text-center z-10">
-              <Camera className="w-12 h-12 text-slate-600 mb-2 animate-bounce" />
-              <p className="text-sm font-semibold text-slate-300">Classroom Camera Feed Inactive</p>
-              <p className="text-xs text-slate-500 mt-1">Please allow camera permissions or connect the classroom webcam device.</p>
+            <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#0B1713]/95 text-[#A7B8AE] p-6 text-center z-10">
+              <Camera className="w-12 h-12 text-[#294638] mb-2 animate-bounce" />
+              <p className="text-sm font-semibold text-[#F8FAFC]">Classroom Camera Feed Inactive</p>
+              <p className="text-xs text-[#A7B8AE] mt-1">Please allow camera permissions or connect the classroom webcam device.</p>
               <div className="flex gap-2 mt-4">
                 <button
                   onClick={startCamera}
-                  className="bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold px-4 py-2 rounded-xl transition shadow-lg flex items-center gap-1.5"
+                  className="bg-[#10B981] hover:bg-[#059669] text-[#0B1713] text-xs font-bold px-4 py-2 rounded-xl transition shadow-sm flex items-center gap-1.5"
                 >
                   <Camera className="w-3.5 h-3.5" />
                   <span>Connect Camera</span>
@@ -555,11 +555,11 @@ export const CameraFeed: React.FC<CameraFeedProps> = ({
 
           {/* Drowsiness Realtime Live Counter Pill across detected students */}
           {eyeClosureTimer > 0 && (
-            <div className="absolute bottom-16 left-4 z-20 bg-slate-950/85 border border-amber-500/40 px-3.5 py-1.5 rounded-xl backdrop-blur-md flex items-center gap-2">
-              <EyeOff className="w-4 h-4 text-amber-400 animate-spin" />
+            <div className="absolute bottom-16 left-4 z-20 bg-[#0B1713]/90 border border-[#FBBF24]/50 px-3.5 py-1.5 rounded-xl backdrop-blur-md flex items-center gap-2">
+              <EyeOff className="w-4 h-4 text-[#FBBF24] animate-spin" />
               <div className="text-xs">
-                <span className="text-slate-400 font-mono">Eyes Closed: </span>
-                <span className={`font-bold font-mono ${eyeClosureTimer >= 3.8 ? 'text-rose-400' : 'text-amber-300'}`}>
+                <span className="text-[#A7B8AE] font-mono">Eyes Closed: </span>
+                <span className={`font-bold font-mono ${eyeClosureTimer >= 3.8 ? 'text-[#F87171]' : 'text-[#FBBF24]'}`}>
                   {eyeClosureTimer.toFixed(1)}s / 3.8s
                 </span>
               </div>
@@ -568,31 +568,31 @@ export const CameraFeed: React.FC<CameraFeedProps> = ({
 
           {/* Floating Automatic 3-Screenshot Evidence Banner */}
           {last3Snapshots && last3Snapshots.length > 0 && (
-            <div className="absolute top-16 right-4 z-30 bg-slate-900/95 border border-rose-500/70 p-3 rounded-2xl shadow-2xl space-y-2 animate-fade-in backdrop-blur-md max-w-xs">
+            <div className="absolute top-16 right-4 z-30 bg-[#10231C]/95 border border-[#F87171]/70 p-3 rounded-2xl shadow-xl space-y-2 animate-fade-in backdrop-blur-md max-w-xs">
               <div className="flex items-center justify-between gap-3 text-xs">
-                <span className="text-rose-400 font-bold flex items-center gap-1.5">
+                <span className="text-[#F87171] font-bold flex items-center gap-1.5">
                   <CheckCircle2 className="w-4 h-4" /> 🚨 SLEEPING ALERT — 3 Frames
                 </span>
                 <button
                   onClick={() => { setLast3Snapshots(null); setSleepingStudentLabel(null); }}
-                  className="text-slate-400 hover:text-white text-xs px-1"
+                  className="text-[#A7B8AE] hover:text-[#F8FAFC] text-xs px-1"
                 >
                   ✕
                 </button>
               </div>
               {sleepingStudentLabel && (
-                <p className="text-[11px] font-bold text-amber-300">👤 {sleepingStudentLabel}</p>
+                <p className="text-[11px] font-bold text-[#FBBF24]">👤 {sleepingStudentLabel}</p>
               )}
-              <p className="text-[10px] text-slate-400">Auto-captured & sent to teacher dashboard.</p>
+              <p className="text-[10px] text-[#A7B8AE]">Auto-captured & sent to teacher dashboard.</p>
               <div className="flex gap-1.5 pt-1">
                 {last3Snapshots.map((snap, idx) => (
                   <div key={idx} className="flex-1 text-center">
                     <img
                       src={snap}
                       alt={`Evidence Frame ${idx + 1}`}
-                      className="w-full h-14 object-cover rounded-lg border border-rose-700/60 shadow-md"
+                      className="w-full h-14 object-cover rounded-lg border border-[#F87171]/50 shadow-md"
                     />
-                    <span className="text-[9px] text-rose-300 font-mono block mt-0.5">F{idx + 1} +{idx * 0.6}s</span>
+                    <span className="text-[9px] text-[#F87171] font-mono block mt-0.5">F{idx + 1} +{idx * 0.6}s</span>
                   </div>
                 ))}
               </div>
@@ -601,13 +601,13 @@ export const CameraFeed: React.FC<CameraFeedProps> = ({
 
           {/* Floating Snapshot Preview Toast */}
           {lastTestSnapshot && !last3Snapshots && (
-            <div className="absolute top-16 right-4 z-30 bg-slate-900 border border-emerald-500/50 p-2.5 rounded-2xl shadow-2xl flex items-center gap-3 animate-fade-in">
-              <img src={lastTestSnapshot} alt="Test Snapshot" className="w-16 h-12 object-cover rounded-lg border border-slate-700" />
+            <div className="absolute top-16 right-4 z-30 bg-[#17382B] border border-[#10B981]/50 p-2.5 rounded-2xl shadow-xl flex items-center gap-3 animate-fade-in">
+              <img src={lastTestSnapshot} alt="Test Snapshot" className="w-16 h-12 object-cover rounded-lg border border-[#294638]" />
               <div className="text-xs pr-2">
-                <span className="text-emerald-400 font-bold block flex items-center gap-1">
+                <span className="text-[#10B981] font-bold block flex items-center gap-1">
                   <CheckCircle2 className="w-3.5 h-3.5" /> Snapshot Captured!
                 </span>
-                <span className="text-[10px] text-slate-400 font-mono">{new Date().toLocaleTimeString()}</span>
+                <span className="text-[10px] text-[#A7B8AE] font-mono">{new Date().toLocaleTimeString()}</span>
               </div>
             </div>
           )}
@@ -615,14 +615,14 @@ export const CameraFeed: React.FC<CameraFeedProps> = ({
 
         {/* Smart AI Actionable Break Nudge */}
         {smartNudge && (
-          <div className="bg-amber-500/15 border-t border-amber-500/30 p-3 px-5 flex items-center justify-between text-xs text-amber-300 backdrop-blur-sm animate-pulse">
+          <div className="bg-[#204735] border-t border-[#294638] p-3 px-5 flex items-center justify-between text-xs text-[#FBBF24] backdrop-blur-sm">
             <div className="flex items-center gap-2.5">
-              <Coffee className="w-4 h-4 text-amber-400 flex-shrink-0" />
-              <span><strong>Smart AI Teaching Nudge:</strong> {smartNudge}</span>
+              <Coffee className="w-4 h-4 text-[#FBBF24] flex-shrink-0" />
+              <span><strong className="text-[#6EE7B7]">Smart AI Teaching Nudge:</strong> {smartNudge}</span>
             </div>
             <button
               onClick={() => setSmartNudge(null)}
-              className="text-[11px] bg-amber-500/20 hover:bg-amber-500/30 px-2 py-0.5 rounded text-amber-200 transition"
+              className="text-[11px] bg-[#10231C] hover:bg-[#17382B] border border-[#294638] px-2.5 py-1 rounded-lg text-[#F8FAFC] transition"
             >
               Acknowledge
             </button>
@@ -630,12 +630,12 @@ export const CameraFeed: React.FC<CameraFeedProps> = ({
         )}
 
         {/* Camera Control Footer */}
-        <div className="bg-slate-950 p-4 border-t border-slate-800 flex items-center justify-between flex-wrap gap-3">
+        <div className="bg-[#10231C] p-4 border-t border-[#294638] flex items-center justify-between flex-wrap gap-3">
           <div className="flex items-center space-x-2 flex-wrap gap-2">
             {monitoringStatus !== 'MONITORING' ? (
               <button
                 onClick={() => setMonitoringStatus('MONITORING')}
-                className="flex items-center space-x-1.5 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold px-3.5 py-2 rounded-xl transition shadow-sm"
+                className="flex items-center space-x-1.5 bg-[#10B981] hover:bg-[#059669] text-[#0B1713] text-xs font-bold px-3.5 py-2 rounded-xl transition shadow-xs"
               >
                 <Play className="w-3.5 h-3.5 fill-current" />
                 <span>{t.camera.startMonitoring}</span>
@@ -643,7 +643,7 @@ export const CameraFeed: React.FC<CameraFeedProps> = ({
             ) : (
               <button
                 onClick={() => setMonitoringStatus('PAUSED')}
-                className="flex items-center space-x-1.5 bg-amber-600 hover:bg-amber-500 text-white text-xs font-bold px-3.5 py-2 rounded-xl transition shadow-sm"
+                className="flex items-center space-x-1.5 bg-[#FBBF24] hover:bg-[#F59E0B] text-[#0B1713] text-xs font-bold px-3.5 py-2 rounded-xl transition shadow-xs"
               >
                 <Pause className="w-3.5 h-3.5 fill-current" />
                 <span>{t.camera.pauseMonitoring}</span>
@@ -652,7 +652,7 @@ export const CameraFeed: React.FC<CameraFeedProps> = ({
 
             <button
               onClick={() => setMonitoringStatus('IDLE')}
-              className="flex items-center space-x-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-medium px-3.5 py-2 rounded-xl transition border border-slate-700"
+              className="flex items-center space-x-1.5 bg-[#17382B] hover:bg-[#204735] text-[#A7B8AE] hover:text-[#F8FAFC] text-xs font-medium px-3.5 py-2 rounded-xl transition border border-[#294638]"
             >
               <Square className="w-3.5 h-3.5 fill-current" />
               <span>{t.camera.stopMonitoring}</span>
@@ -662,8 +662,8 @@ export const CameraFeed: React.FC<CameraFeedProps> = ({
               onClick={() => setShowLandmarks(!showLandmarks)}
               className={`flex items-center space-x-1.5 text-xs font-medium px-3 py-2 rounded-xl border transition ${
                 showLandmarks
-                  ? 'bg-blue-600/20 text-blue-400 border-blue-500/40'
-                  : 'bg-slate-800 text-slate-400 border-slate-700'
+                  ? 'bg-[#204735] text-[#6EE7B7] border-[#10B981]/50'
+                  : 'bg-[#17382B] text-[#A7B8AE] border-[#294638] hover:text-[#F8FAFC]'
               }`}
             >
               <Eye className="w-3.5 h-3.5" />
@@ -672,53 +672,53 @@ export const CameraFeed: React.FC<CameraFeedProps> = ({
 
             <button
               onClick={handleManualSnapshotTest}
-              className="flex items-center space-x-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold px-3 py-2 rounded-xl border border-slate-700 transition"
+              className="flex items-center space-x-1.5 bg-[#17382B] hover:bg-[#204735] text-[#F8FAFC] text-xs font-semibold px-3 py-2 rounded-xl border border-[#294638] transition"
               title="Test capturing a snapshot frame from the camera right now"
             >
-              <Camera className="w-3.5 h-3.5 text-blue-400" />
+              <Camera className="w-3.5 h-3.5 text-[#10B981]" />
               <span>📸 Test Snapshot</span>
             </button>
           </div>
 
           {/* Live Telemetry Mini Reading */}
-          <div className="flex items-center gap-3 text-xs text-slate-400 font-mono">
-            <span>Avg EAR: <strong className="text-slate-200">{liveEAR.toFixed(3)}</strong></span>
-            <span>Noise: <strong className="text-slate-200">{noiseData.decibels} dB</strong></span>
+          <div className="flex items-center gap-3 text-xs text-[#A7B8AE] font-mono">
+            <span>Avg EAR: <strong className="text-[#F8FAFC]">{liveEAR.toFixed(3)}</strong></span>
+            <span>Noise: <strong className="text-[#F8FAFC]">{noiseData.decibels} dB</strong></span>
           </div>
         </div>
       </div>
 
       {/* Active Multi-Student Real-Time Observation Deck */}
-      <div className="bg-slate-900 border border-slate-800 rounded-3xl p-5 shadow-xl space-y-4">
-        <div className="flex items-center justify-between flex-wrap gap-3 pb-3 border-b border-slate-800/80">
+      <div className="bg-[#17382B] border border-[#294638] rounded-3xl p-5 shadow-sm space-y-4">
+        <div className="flex items-center justify-between flex-wrap gap-3 pb-3 border-b border-[#294638]">
           <div className="flex items-center gap-2.5">
-            <div className="p-2 bg-blue-500/10 text-blue-400 rounded-xl border border-blue-500/20">
+            <div className="p-2 bg-[#204735] text-[#10B981] rounded-xl border border-[#294638]">
               <Users className="w-5 h-5" />
             </div>
             <div>
-              <h3 className="text-sm font-bold text-white flex items-center gap-2">
+              <h3 className="text-sm font-bold text-[#F8FAFC] flex items-center gap-2">
                 Active Multi-Student Live Observation Deck
-                <span className="text-[11px] bg-blue-500/20 text-blue-300 font-mono px-2 py-0.5 rounded-full border border-blue-500/30">
+                <span className="text-[11px] bg-[#204735] text-[#6EE7B7] font-mono px-2 py-0.5 rounded-full border border-[#294638]">
                   {activeMetrics.length} Students Observed Simultaneously
                 </span>
               </h3>
-              <p className="text-[11px] text-slate-400">
+              <p className="text-[11px] text-[#A7B8AE]">
                 Individual computer-vision tracking for every student: Attentiveness, EAR eye closure, Head-Pose (Yaw), and Drowsiness
               </p>
             </div>
           </div>
 
           <div className="flex items-center gap-2 flex-wrap">
-            <span className="text-[11px] px-2.5 py-1 rounded-lg bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 font-semibold">
+            <span className="text-[11px] px-2.5 py-1 rounded-lg bg-[#204735] text-[#6EE7B7] border border-[#10B981]/40 font-semibold">
               ● {activeMetrics.filter(m => m.attentionStatus === 'ATTENTIVE').length} Attentive
             </span>
-            <span className="text-[11px] px-2.5 py-1 rounded-lg bg-amber-500/15 text-amber-300 border border-amber-500/30 font-semibold">
+            <span className="text-[11px] px-2.5 py-1 rounded-lg bg-[#204735] text-[#FBBF24] border border-[#FBBF24]/40 font-semibold">
               ● {activeMetrics.filter(m => m.attentionStatus === 'EYES_CLOSING').length} Eyes Closing
             </span>
-            <span className="text-[11px] px-2.5 py-1 rounded-lg bg-rose-500/15 text-rose-300 border border-rose-500/30 font-semibold">
+            <span className="text-[11px] px-2.5 py-1 rounded-lg bg-[#204735] text-[#F87171] border border-[#F87171]/40 font-semibold">
               ● {activeMetrics.filter(m => m.attentionStatus === 'SLEEPING').length} Sleeping
             </span>
-            <span className="text-[11px] px-2.5 py-1 rounded-lg bg-orange-500/15 text-orange-300 border border-orange-500/30 font-semibold">
+            <span className="text-[11px] px-2.5 py-1 rounded-lg bg-[#204735] text-[#FBBF24] border border-[#FBBF24]/30 font-semibold">
               ● {activeMetrics.filter(m => m.attentionStatus === 'DISTRACTED').length} Distracted
             </span>
           </div>
@@ -726,10 +726,10 @@ export const CameraFeed: React.FC<CameraFeedProps> = ({
 
         {/* Student Observation Cards Grid */}
         {activeMetrics.length === 0 ? (
-          <div className="py-8 text-center bg-slate-950/60 rounded-2xl border border-slate-800/80">
-            <Users className="w-10 h-10 text-slate-600 mx-auto mb-2" />
-            <p className="text-xs font-semibold text-slate-300">No Students Currently Detected in Camera Frame</p>
-            <p className="text-[11px] text-slate-500 mt-1 max-w-md mx-auto">
+          <div className="py-8 text-center bg-[#10231C] rounded-2xl border border-[#294638]">
+            <Users className="w-10 h-10 text-[#294638] mx-auto mb-2" />
+            <p className="text-xs font-semibold text-[#F8FAFC]">No Students Currently Detected in Camera Frame</p>
+            <p className="text-[11px] text-[#A7B8AE] mt-1 max-w-md mx-auto">
               Position the classroom webcam towards seated students to detect attentiveness, eye aspect ratio (EAR), and head orientation in real-time.
             </p>
           </div>
@@ -741,38 +741,38 @@ export const CameraFeed: React.FC<CameraFeedProps> = ({
               const isDistracted = student.attentionStatus === 'DISTRACTED';
               const isMotion = student.attentionStatus === 'HIGH_MOTION';
 
-              let borderTheme = 'border-emerald-500/40 bg-emerald-950/20';
+              let borderTheme = 'border-[#294638] bg-[#204735]/40';
               let statusText = 'Attentive';
-              let statusColor = 'text-emerald-400 bg-emerald-500/20 border-emerald-500/30';
+              let statusColor = 'text-[#6EE7B7] bg-[#10B981]/20 border-[#10B981]/30';
 
               if (isSleeping) {
-                borderTheme = 'border-rose-500/70 bg-rose-950/30 animate-pulse';
+                borderTheme = 'border-[#F87171]/70 bg-[#204735]/60 animate-pulse';
                 statusText = `SLEEPING (${student.closedDurationSec}s)`;
-                statusColor = 'text-rose-300 bg-rose-500/30 border-rose-500/50';
+                statusColor = 'text-[#F87171] bg-[#F87171]/20 border-[#F87171]/50';
               } else if (isClosing) {
-                borderTheme = 'border-amber-500/60 bg-amber-950/25';
+                borderTheme = 'border-[#FBBF24]/60 bg-[#204735]/50';
                 statusText = `Closing (${student.closedDurationSec}s)`;
-                statusColor = 'text-amber-300 bg-amber-500/25 border-amber-500/40';
+                statusColor = 'text-[#FBBF24] bg-[#FBBF24]/20 border-[#FBBF24]/40';
               } else if (isDistracted) {
-                borderTheme = 'border-orange-500/50 bg-orange-950/20';
+                borderTheme = 'border-[#FBBF24]/50 bg-[#204735]/40';
                 statusText = `Turned Away (${student.disturbanceDurationSec}s)`;
-                statusColor = 'text-orange-300 bg-orange-500/25 border-orange-500/40';
+                statusColor = 'text-[#FBBF24] bg-[#FBBF24]/20 border-[#FBBF24]/40';
               } else if (isMotion) {
-                borderTheme = 'border-purple-500/50 bg-purple-950/20';
+                borderTheme = 'border-[#6EE7B7]/50 bg-[#204735]/40';
                 statusText = 'High Motion';
-                statusColor = 'text-purple-300 bg-purple-500/25 border-purple-500/40';
+                statusColor = 'text-[#6EE7B7] bg-[#10B981]/20 border-[#10B981]/40';
               }
 
               return (
                 <div
                   key={student.trackId}
-                  className={`border rounded-2xl p-3.5 transition-all shadow-md flex flex-col justify-between space-y-3 ${borderTheme}`}
+                  className={`border rounded-2xl p-3.5 transition-all shadow-xs flex flex-col justify-between space-y-3 ${borderTheme}`}
                 >
                   {/* Header: Student Identity & Status */}
                   <div>
                     <div className="flex items-start justify-between gap-2">
                       <div className="flex items-center gap-2">
-                        <div className="w-8 h-8 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center text-xs font-bold text-white overflow-hidden flex-shrink-0">
+                        <div className="w-8 h-8 rounded-full bg-[#10231C] border border-[#294638] flex items-center justify-center text-xs font-bold text-[#F8FAFC] overflow-hidden flex-shrink-0">
                           {student.matchedStudent?.photo_data_url ? (
                             <img
                               src={student.matchedStudent.photo_data_url}
@@ -784,10 +784,10 @@ export const CameraFeed: React.FC<CameraFeedProps> = ({
                           )}
                         </div>
                         <div>
-                          <h4 className="text-xs font-bold text-white truncate max-w-[130px]" title={student.deskLabel}>
+                          <h4 className="text-xs font-bold text-[#F8FAFC] truncate max-w-[130px]" title={student.deskLabel}>
                             {student.deskLabel}
                           </h4>
-                          <span className="text-[10px] text-slate-400 font-mono block">
+                          <span className="text-[10px] text-[#A7B8AE] font-mono block">
                             Track #{student.trackId} • Desk #{student.faceIndex + 1}
                           </span>
                         </div>
@@ -800,19 +800,19 @@ export const CameraFeed: React.FC<CameraFeedProps> = ({
                   </div>
 
                   {/* Real-time Telemetry Bars */}
-                  <div className="space-y-2 bg-slate-950/60 p-2.5 rounded-xl border border-slate-800/80">
+                  <div className="space-y-2 bg-[#10231C] p-2.5 rounded-xl border border-[#294638]">
                     {/* Focus Score Bar */}
                     <div>
                       <div className="flex items-center justify-between text-[10px]">
-                        <span className="text-slate-400">Focus Score</span>
-                        <strong className={`font-mono ${student.attentionScore >= 80 ? 'text-emerald-400' : student.attentionScore >= 50 ? 'text-amber-400' : 'text-rose-400'}`}>
+                        <span className="text-[#A7B8AE]">Focus Score</span>
+                        <strong className={`font-mono ${student.attentionScore >= 80 ? 'text-[#10B981]' : student.attentionScore >= 50 ? 'text-[#FBBF24]' : 'text-[#F87171]'}`}>
                           {student.attentionScore}%
                         </strong>
                       </div>
-                      <div className="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden mt-1">
+                      <div className="w-full bg-[#0B1713] h-1.5 rounded-full overflow-hidden mt-1 border border-[#294638]">
                         <div
                           className={`h-full rounded-full transition-all duration-300 ${
-                            student.attentionScore >= 80 ? 'bg-emerald-500' : student.attentionScore >= 50 ? 'bg-amber-500' : 'bg-rose-500'
+                            student.attentionScore >= 80 ? 'bg-[#10B981]' : student.attentionScore >= 50 ? 'bg-[#FBBF24]' : 'bg-[#F87171]'
                           }`}
                           style={{ width: `${student.attentionScore}%` }}
                         />
@@ -821,31 +821,31 @@ export const CameraFeed: React.FC<CameraFeedProps> = ({
 
                     {/* EAR (Eye Aspect Ratio) */}
                     <div className="flex items-center justify-between text-[10px] font-mono">
-                      <span className="text-slate-400 flex items-center gap-1">
-                        {student.eyesClosed ? <EyeOff className="w-3 h-3 text-amber-400" /> : <Eye className="w-3 h-3 text-emerald-400" />}
+                      <span className="text-[#A7B8AE] flex items-center gap-1">
+                        {student.eyesClosed ? <EyeOff className="w-3 h-3 text-[#FBBF24]" /> : <Eye className="w-3 h-3 text-[#10B981]" />}
                         EAR:
                       </span>
-                      <span className={student.eyesClosed ? 'text-amber-300 font-bold' : 'text-slate-200'}>
+                      <span className={student.eyesClosed ? 'text-[#FBBF24] font-bold' : 'text-[#F8FAFC]'}>
                         {student.ear.toFixed(3)} {student.eyesClosed ? `(${student.closedDurationSec}s)` : '(Open)'}
                       </span>
                     </div>
 
                     {/* Yaw / Head Pose */}
                     <div className="flex items-center justify-between text-[10px] font-mono">
-                      <span className="text-slate-400 flex items-center gap-1">
-                        <Compass className="w-3 h-3 text-blue-400" /> Yaw:
+                      <span className="text-[#A7B8AE] flex items-center gap-1">
+                        <Compass className="w-3 h-3 text-[#10B981]" /> Yaw:
                       </span>
-                      <span className={student.isTurnedAway ? 'text-orange-300 font-bold' : 'text-slate-200'}>
+                      <span className={student.isTurnedAway ? 'text-[#FBBF24] font-bold' : 'text-[#F8FAFC]'}>
                         {student.yawDegrees > 0 ? '+' : ''}{student.yawDegrees}° {student.isTurnedAway ? '(Away)' : '(Board)'}
                       </span>
                     </div>
                   </div>
 
                   {/* Status Observation Note */}
-                  <div className="text-[10px] text-slate-400 flex items-center justify-between">
+                  <div className="text-[10px] text-[#A7B8AE] flex items-center justify-between">
                     <span>{isSleeping ? '🚨 Sleeping detected' : isClosing ? '⚠️ Eyes heavy' : isDistracted ? '⚠️ Looking at neighbor' : '✅ Focused on lecture'}</span>
                     {student.matchedStudent && (
-                      <span className="text-emerald-400 flex items-center gap-0.5 text-[9px] font-semibold">
+                      <span className="text-[#10B981] flex items-center gap-0.5 text-[9px] font-semibold">
                         <ShieldCheck className="w-2.5 h-2.5" /> Verified
                       </span>
                     )}
@@ -862,3 +862,4 @@ export const CameraFeed: React.FC<CameraFeedProps> = ({
     </div>
   );
 };
+

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useLanguage } from '../context/LanguageContext';
 import { apiRequest } from '../services/api';
-import { Sliders, ShieldCheck, CheckCircle2, AlertTriangle, Cpu, Volume2, Eye } from 'lucide-react';
+import { Sliders, CheckCircle2, Cpu, Volume2, Eye } from 'lucide-react';
 
 export const AIConfigPage: React.FC = () => {
   const { t } = useLanguage();
@@ -62,37 +62,37 @@ export const AIConfigPage: React.FC = () => {
 
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
-      <div className="pb-4 border-b border-slate-800">
-        <h1 className="text-xl font-bold text-white tracking-tight">AI Vision Pipeline & False-Positive Controls</h1>
-        <p className="text-xs text-slate-400 mt-0.5">
+      <div className="pb-4 border-b border-[#294638]">
+        <h1 className="text-xl font-bold text-[#F8FAFC] tracking-tight">AI Vision Pipeline & False-Positive Controls</h1>
+        <p className="text-xs text-[#A7B8AE] mt-0.5">
           Tune temporal thresholds to prevent false positives caused by natural blinking, looking down while taking notes, or normal student questions.
         </p>
       </div>
 
       {savedMessage && (
-        <div className="p-3 bg-emerald-500/10 border border-emerald-500/30 rounded-2xl text-xs text-emerald-300 flex items-center justify-between">
+        <div className="p-3 bg-[#204735] border border-[#10B981]/40 rounded-2xl text-xs text-[#6EE7B7] flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <CheckCircle2 className="w-4 h-4 flex-shrink-0" />
+            <CheckCircle2 className="w-4 h-4 flex-shrink-0 text-[#10B981]" />
             <span>{savedMessage}</span>
           </div>
-          <button onClick={() => setSavedMessage(null)} className="text-slate-400 hover:text-white">✕</button>
+          <button onClick={() => setSavedMessage(null)} className="text-[#A7B8AE] hover:text-[#F8FAFC]">✕</button>
         </div>
       )}
 
       {/* Sliders Card */}
-      <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-xl space-y-6">
+      <div className="bg-[#17382B] border border-[#294638] rounded-3xl p-6 shadow-sm space-y-6">
         {/* Continuous Eye Closure Slider */}
         <div className="space-y-2">
           <div className="flex items-center justify-between">
-            <label className="text-xs font-bold text-white flex items-center gap-2">
-              <Eye className="w-4 h-4 text-amber-400" />
+            <label className="text-xs font-bold text-[#F8FAFC] flex items-center gap-2">
+              <Eye className="w-4 h-4 text-[#FBBF24]" />
               Continuous Eye Closure Duration Threshold (Drowsiness Alert)
             </label>
-            <span className="text-xs font-mono font-bold text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded-lg border border-amber-500/20">
+            <span className="text-xs font-mono font-bold text-[#6EE7B7] bg-[#204735] px-2.5 py-0.5 rounded-lg border border-[#294638]">
               {eyeClosureThreshold.toFixed(1)} seconds
             </span>
           </div>
-          <p className="text-[11px] text-slate-400 leading-relaxed">
+          <p className="text-[11px] text-[#A7B8AE] leading-relaxed">
             Must remain closed continuously beyond this duration. Normal blinking (100–400ms) and looking down to write notes are filtered out and will NOT trigger alerts.
           </p>
           <input
@@ -102,9 +102,9 @@ export const AIConfigPage: React.FC = () => {
             step="0.5"
             value={eyeClosureThreshold}
             onChange={(e) => setEyeClosureThreshold(parseFloat(e.target.value))}
-            className="w-full accent-amber-500"
+            className="w-full accent-[#10B981]"
           />
-          <div className="flex justify-between text-[10px] text-slate-500 font-mono">
+          <div className="flex justify-between text-[10px] text-[#A7B8AE] font-mono">
             <span>4.0s (Sensitive)</span>
             <span>8.0s (Recommended Standard)</span>
             <span>15.0s (Strict)</span>
@@ -112,17 +112,17 @@ export const AIConfigPage: React.FC = () => {
         </div>
 
         {/* Head Pose Yaw Angle Slider */}
-        <div className="space-y-2 pt-4 border-t border-slate-800">
+        <div className="space-y-2 pt-4 border-t border-[#294638]">
           <div className="flex items-center justify-between">
-            <label className="text-xs font-bold text-white flex items-center gap-2">
-              <Sliders className="w-4 h-4 text-orange-400" />
+            <label className="text-xs font-bold text-[#F8FAFC] flex items-center gap-2">
+              <Sliders className="w-4 h-4 text-[#10B981]" />
               Head-Pose Yaw Angle Threshold (Distraction / Turned Away)
             </label>
-            <span className="text-xs font-mono font-bold text-orange-400 bg-orange-500/10 px-2 py-0.5 rounded-lg border border-orange-500/20">
+            <span className="text-xs font-mono font-bold text-[#6EE7B7] bg-[#204735] px-2.5 py-0.5 rounded-lg border border-[#294638]">
               ±{yawThreshold}° away from board
             </span>
           </div>
-          <p className="text-[11px] text-slate-400 leading-relaxed">
+          <p className="text-[11px] text-[#A7B8AE] leading-relaxed">
             Tolerance angle before orientation away from presentation is evaluated. Prevents flagging students who briefly glance toward classmates.
           </p>
           <input
@@ -132,22 +132,22 @@ export const AIConfigPage: React.FC = () => {
             step="1"
             value={yawThreshold}
             onChange={(e) => setYawThreshold(parseInt(e.target.value, 10))}
-            className="w-full accent-orange-500"
+            className="w-full accent-[#10B981]"
           />
         </div>
 
         {/* Classroom Noise Alert Limit */}
-        <div className="space-y-2 pt-4 border-t border-slate-800">
+        <div className="space-y-2 pt-4 border-t border-[#294638]">
           <div className="flex items-center justify-between">
-            <label className="text-xs font-bold text-white flex items-center gap-2">
-              <Volume2 className="w-4 h-4 text-blue-400" />
+            <label className="text-xs font-bold text-[#F8FAFC] flex items-center gap-2">
+              <Volume2 className="w-4 h-4 text-[#6EE7B7]" />
               Classroom Noise Alert Limit (Web Audio API Decibels)
             </label>
-            <span className="text-xs font-mono font-bold text-blue-400 bg-blue-500/10 px-2 py-0.5 rounded-lg border border-blue-500/20">
+            <span className="text-xs font-mono font-bold text-[#6EE7B7] bg-[#204735] px-2.5 py-0.5 rounded-lg border border-[#294638]">
               {noiseThreshold} dB
             </span>
           </div>
-          <p className="text-[11px] text-slate-400 leading-relaxed">
+          <p className="text-[11px] text-[#A7B8AE] leading-relaxed">
             Flags elevated classroom noise that correlates with attention drops or group disruption.
           </p>
           <input
@@ -157,22 +157,22 @@ export const AIConfigPage: React.FC = () => {
             step="1"
             value={noiseThreshold}
             onChange={(e) => setNoiseThreshold(parseInt(e.target.value, 10))}
-            className="w-full accent-blue-500"
+            className="w-full accent-[#10B981]"
           />
         </div>
 
         {/* Minimum Face Match Confidence */}
-        <div className="space-y-2 pt-4 border-t border-slate-800">
+        <div className="space-y-2 pt-4 border-t border-[#294638]">
           <div className="flex items-center justify-between">
-            <label className="text-xs font-bold text-white flex items-center gap-2">
-              <Cpu className="w-4 h-4 text-purple-400" />
+            <label className="text-xs font-bold text-[#F8FAFC] flex items-center gap-2">
+              <Cpu className="w-4 h-4 text-[#10B981]" />
               Minimum Face Match Confidence Cutoff
             </label>
-            <span className="text-xs font-mono font-bold text-purple-400 bg-purple-500/10 px-2 py-0.5 rounded-lg border border-purple-500/20">
+            <span className="text-xs font-mono font-bold text-[#6EE7B7] bg-[#204735] px-2.5 py-0.5 rounded-lg border border-[#294638]">
               {confidenceThreshold}%
             </span>
           </div>
-          <p className="text-[11px] text-slate-400 leading-relaxed">
+          <p className="text-[11px] text-[#A7B8AE] leading-relaxed">
             If cosine similarity falls below this threshold, the student is labeled "Unknown / Unverified Student". The system NEVER guesses identities.
           </p>
           <input
@@ -182,7 +182,7 @@ export const AIConfigPage: React.FC = () => {
             step="1"
             value={confidenceThreshold}
             onChange={(e) => setConfidenceThreshold(parseInt(e.target.value, 10))}
-            className="w-full accent-purple-500"
+            className="w-full accent-[#10B981]"
           />
         </div>
 
@@ -190,7 +190,7 @@ export const AIConfigPage: React.FC = () => {
           <button
             onClick={handleSave}
             disabled={saving}
-            className="bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-white text-xs font-bold px-6 py-2.5 rounded-xl transition shadow-lg"
+            className="bg-[#10B981] hover:bg-[#059669] disabled:opacity-50 text-[#0B1713] text-xs font-bold px-6 py-2.5 rounded-xl transition shadow-xs"
           >
             {saving ? 'Applying...' : 'Save AI Configuration'}
           </button>

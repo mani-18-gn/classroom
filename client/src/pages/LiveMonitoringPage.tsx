@@ -8,8 +8,8 @@ import { VerificationModal } from '../components/VerificationModal';
 import { apiRequest } from '../services/api';
 import { DetectedEvent } from '../types';
 import {
-  Activity, Users, AlertCircle, CheckCircle, BookmarkPlus,
-  Compass, Flame, ShieldAlert, Sparkles, FileText
+  Activity, Users, AlertCircle, BookmarkPlus,
+  Flame, FileText
 } from 'lucide-react';
 
 interface LiveMonitoringPageProps {
@@ -187,49 +187,49 @@ export const LiveMonitoringPage: React.FC<LiveMonitoringPageProps> = ({ onOpenRe
       {/* Aggregate Metric Cards Bar */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {/* Attention Score */}
-        <div className="bg-slate-900/90 border border-slate-800 rounded-2xl p-4 shadow-lg flex items-center justify-between">
+        <div className="bg-[#17382B] border border-[#294638] rounded-2xl p-4 shadow-sm flex items-center justify-between">
           <div>
-            <p className="text-[11px] text-slate-400 font-medium">{t.metrics.attentionScore}</p>
-            <p className="text-2xl font-bold font-mono text-white mt-0.5">{metrics.attentionScore}%</p>
-            <span className="text-[10px] text-emerald-400 font-medium">▲ +4% above semester avg</span>
+            <p className="text-[11px] text-[#A7B8AE] font-medium">{t.metrics.attentionScore}</p>
+            <p className="text-2xl font-bold font-mono text-[#F8FAFC] mt-0.5">{metrics.attentionScore}%</p>
+            <span className="text-[10px] text-[#6EE7B7] font-medium">▲ +4% above semester avg</span>
           </div>
-          <div className="p-3 bg-blue-500/10 text-blue-400 rounded-2xl border border-blue-500/20">
+          <div className="p-3 bg-[#204735] text-[#10B981] rounded-2xl border border-[#294638]">
             <Activity className="w-5 h-5" />
           </div>
         </div>
 
         {/* Drowsiness Rate */}
-        <div className="bg-slate-900/90 border border-slate-800 rounded-2xl p-4 shadow-lg flex items-center justify-between">
+        <div className="bg-[#17382B] border border-[#294638] rounded-2xl p-4 shadow-sm flex items-center justify-between">
           <div>
-            <p className="text-[11px] text-slate-400 font-medium">{t.metrics.drowsinessRate}</p>
-            <p className="text-2xl font-bold font-mono text-white mt-0.5">{metrics.drowsinessRate}%</p>
-            <span className="text-[10px] text-emerald-400 font-medium">Nominal (&lt;10%)</span>
+            <p className="text-[11px] text-[#A7B8AE] font-medium">{t.metrics.drowsinessRate}</p>
+            <p className="text-2xl font-bold font-mono text-[#F8FAFC] mt-0.5">{metrics.drowsinessRate}%</p>
+            <span className="text-[10px] text-[#6EE7B7] font-medium">Nominal (&lt;10%)</span>
           </div>
-          <div className="p-3 bg-amber-500/10 text-amber-400 rounded-2xl border border-amber-500/20">
+          <div className="p-3 bg-[#204735] text-[#FBBF24] rounded-2xl border border-[#294638]">
             <AlertCircle className="w-5 h-5" />
           </div>
         </div>
 
         {/* Noise Level */}
-        <div className="bg-slate-900/90 border border-slate-800 rounded-2xl p-4 shadow-lg flex items-center justify-between">
+        <div className="bg-[#17382B] border border-[#294638] rounded-2xl p-4 shadow-sm flex items-center justify-between">
           <div>
-            <p className="text-[11px] text-slate-400 font-medium">{t.metrics.noiseLevel}</p>
-            <p className="text-2xl font-bold font-mono text-white mt-0.5">{metrics.noiseLevel}</p>
-            <span className="text-[10px] text-slate-400 font-medium">Ambient Laptop Mic</span>
+            <p className="text-[11px] text-[#A7B8AE] font-medium">{t.metrics.noiseLevel}</p>
+            <p className="text-2xl font-bold font-mono text-[#F8FAFC] mt-0.5">{metrics.noiseLevel}</p>
+            <span className="text-[10px] text-[#A7B8AE] font-medium">Ambient Laptop Mic</span>
           </div>
-          <div className="p-3 bg-indigo-500/10 text-indigo-400 rounded-2xl border border-indigo-500/20">
+          <div className="p-3 bg-[#204735] text-[#6EE7B7] rounded-2xl border border-[#294638]">
             <Flame className="w-5 h-5" />
           </div>
         </div>
 
         {/* Students Detected In Frame */}
-        <div className="bg-slate-900/90 border border-slate-800 rounded-2xl p-4 shadow-lg flex items-center justify-between">
+        <div className="bg-[#17382B] border border-[#294638] rounded-2xl p-4 shadow-sm flex items-center justify-between">
           <div>
-            <p className="text-[11px] text-slate-400 font-medium">{t.metrics.studentsDetected}</p>
-            <p className="text-2xl font-bold font-mono text-white mt-0.5">{metrics.visibleStudents} / 32</p>
-            <span className="text-[10px] text-slate-400 font-medium">Room 402 AI Lab</span>
+            <p className="text-[11px] text-[#A7B8AE] font-medium">{t.metrics.studentsDetected}</p>
+            <p className="text-2xl font-bold font-mono text-[#F8FAFC] mt-0.5">{metrics.visibleStudents} / 32</p>
+            <span className="text-[10px] text-[#A7B8AE] font-medium">Room 402 AI Lab</span>
           </div>
-          <div className="p-3 bg-purple-500/10 text-purple-400 rounded-2xl border border-purple-500/20">
+          <div className="p-3 bg-[#204735] text-[#10B981] rounded-2xl border border-[#294638]">
             <Users className="w-5 h-5" />
           </div>
         </div>
@@ -250,17 +250,17 @@ export const LiveMonitoringPage: React.FC<LiveMonitoringPageProps> = ({ onOpenRe
           <SeatingHeatmap />
 
           {/* Lecture Pace Timestamp Markers (Topic Tracker) */}
-          <div className="bg-slate-900/90 border border-slate-800 rounded-2xl p-4 shadow-lg">
+          <div className="bg-[#17382B] border border-[#294638] rounded-2xl p-4 shadow-sm">
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center gap-2">
-                <BookmarkPlus className="w-4 h-4 text-blue-400" />
-                <h4 className="text-xs font-bold text-slate-200 uppercase tracking-wider">
+                <BookmarkPlus className="w-4 h-4 text-[#10B981]" />
+                <h4 className="text-xs font-bold text-[#F8FAFC] uppercase tracking-wider">
                   Lecture Pace & Topic Markers (Pace Correlation)
                 </h4>
               </div>
               <button
                 onClick={() => onOpenReport && onOpenReport(activeSessionId)}
-                className="text-xs text-blue-400 hover:text-blue-300 flex items-center gap-1 font-medium"
+                className="text-xs text-[#6EE7B7] hover:text-[#10B981] flex items-center gap-1 font-medium transition"
               >
                 <FileText className="w-3.5 h-3.5" /> View Session Summary Report
               </button>
@@ -273,11 +273,11 @@ export const LiveMonitoringPage: React.FC<LiveMonitoringPageProps> = ({ onOpenRe
                 onChange={(e) => setMarkerInput(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && handleAddMarker()}
                 placeholder="E.g. Started new topic, Gave live example, Interactive quiz..."
-                className="flex-1 bg-slate-950 border border-slate-700 rounded-xl px-3 py-1.5 text-xs text-slate-200 focus:outline-none focus:border-blue-500"
+                className="flex-1 bg-[#10231C] border border-[#294638] rounded-xl px-3 py-1.5 text-xs text-[#F8FAFC] focus:outline-none focus:border-[#10B981]"
               />
               <button
                 onClick={handleAddMarker}
-                className="bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold px-3 py-1.5 rounded-xl transition"
+                className="bg-[#10B981] hover:bg-[#059669] text-[#0B1713] text-xs font-bold px-3 py-1.5 rounded-xl transition shadow-xs"
               >
                 Mark Timestamp
               </button>
@@ -288,9 +288,9 @@ export const LiveMonitoringPage: React.FC<LiveMonitoringPageProps> = ({ onOpenRe
               {markers.map((m) => (
                 <div
                   key={m.id}
-                  className="bg-slate-800/80 border border-slate-700 px-2.5 py-1 rounded-lg text-[11px] text-slate-300 flex items-center gap-1.5"
+                  className="bg-[#10231C] border border-[#294638] px-2.5 py-1 rounded-lg text-[11px] text-[#F8FAFC] flex items-center gap-1.5"
                 >
-                  <span className="text-blue-400 font-mono text-[10px]">{m.time}</span>
+                  <span className="text-[#6EE7B7] font-mono text-[10px]">{m.time}</span>
                   <span>{m.title}</span>
                 </div>
               ))}

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { LanguageProvider, useLanguage } from './context/LanguageContext';
 import { Navbar } from './components/Navbar';
+import { Sidebar } from './components/Sidebar';
 import { Role } from './types';
 
 // Auth Portals
@@ -33,6 +34,7 @@ const MainApp: React.FC = () => {
   // Navigation tab state
   const [currentTab, setCurrentTab] = useState<string>('monitoring');
   const [selectedSessionId, setSelectedSessionId] = useState<number>(1);
+  const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState<boolean>(false);
 
   // Portal selection & auth screens state
   const [authView, setAuthView] = useState<'PORTAL_GATEWAY' | 'STUDENT_AUTH' | 'TEACHER_AUTH' | 'ADMIN_AUTH' | null>(null);
@@ -63,9 +65,9 @@ const MainApp: React.FC = () => {
   // 0. Session initialization loader
   if (loading) {
     return (
-      <div className="min-h-screen bg-slate-950 flex flex-col items-center justify-center space-y-4 text-slate-400 font-sans">
-        <div className="w-10 h-10 border-4 border-blue-500/20 border-t-blue-500 rounded-full animate-spin" />
-        <p className="text-xs font-mono tracking-wider uppercase text-slate-300">
+      <div className="min-h-screen bg-[#0B1713] flex flex-col items-center justify-center space-y-4 text-[#A7B8AE] font-sans">
+        <div className="w-12 h-12 border-4 border-[#10B981]/20 border-t-[#10B981] rounded-full animate-spin shadow-lg" />
+        <p className="text-xs font-mono tracking-widest uppercase text-[#6EE7B7]">
           Initializing ClassGuard AI Secure Session...
         </p>
       </div>
@@ -77,11 +79,11 @@ const MainApp: React.FC = () => {
 
   if (activeView === 'PORTAL_GATEWAY') {
     return (
-      <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans">
+      <div className="min-h-screen bg-[#0B1713] text-[#F8FAFC] flex flex-col font-sans">
         <Navbar
           currentTab={currentTab}
-          setCurrentTab={setCurrentTab}
           onOpenPortalSelection={handleOpenPortalSelection}
+          isStandalone={true}
         />
         <PortalSelectionPage
           onSelectRole={handleSelectRoleFromGateway}
@@ -93,11 +95,11 @@ const MainApp: React.FC = () => {
 
   if (activeView === 'STUDENT_AUTH') {
     return (
-      <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans">
+      <div className="min-h-screen bg-[#0B1713] text-[#F8FAFC] flex flex-col font-sans">
         <Navbar
           currentTab={currentTab}
-          setCurrentTab={setCurrentTab}
           onOpenPortalSelection={handleOpenPortalSelection}
+          isStandalone={true}
         />
         <StudentAuthPage
           onBackToPortalSelection={() => setAuthView('PORTAL_GATEWAY')}
@@ -109,11 +111,11 @@ const MainApp: React.FC = () => {
 
   if (activeView === 'TEACHER_AUTH') {
     return (
-      <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans">
+      <div className="min-h-screen bg-[#0B1713] text-[#F8FAFC] flex flex-col font-sans">
         <Navbar
           currentTab={currentTab}
-          setCurrentTab={setCurrentTab}
           onOpenPortalSelection={handleOpenPortalSelection}
+          isStandalone={true}
         />
         <TeacherAuthPage
           onBackToPortalSelection={() => setAuthView('PORTAL_GATEWAY')}
@@ -125,11 +127,11 @@ const MainApp: React.FC = () => {
 
   if (activeView === 'ADMIN_AUTH') {
     return (
-      <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans">
+      <div className="min-h-screen bg-[#0B1713] text-[#F8FAFC] flex flex-col font-sans">
         <Navbar
           currentTab={currentTab}
-          setCurrentTab={setCurrentTab}
           onOpenPortalSelection={handleOpenPortalSelection}
+          isStandalone={true}
         />
         <AdminAuthPage
           onBackToPortalSelection={() => setAuthView('PORTAL_GATEWAY')}
@@ -195,7 +197,7 @@ const MainApp: React.FC = () => {
       case 'dashboard':
         return (
           <TeacherDashboard
-            onNavigateToMonitoring={(clsId) => setCurrentTab('monitoring')}
+            onNavigateToMonitoring={() => setCurrentTab('monitoring')}
             onNavigateToReports={(sessId) => {
               setSelectedSessionId(sessId);
               setCurrentTab('reports');
@@ -205,7 +207,7 @@ const MainApp: React.FC = () => {
       case 'classrooms':
         return (
           <ClassroomManagementPage
-            onStartMonitoring={(clsId) => setCurrentTab('monitoring')}
+            onStartMonitoring={() => setCurrentTab('monitoring')}
           />
         );
       case 'registration':
@@ -222,30 +224,47 @@ const MainApp: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans selection:bg-blue-500 selection:text-white">
-      {/* Navigation */}
-      <Navbar
+    <div className="min-h-screen bg-[#0B1713] text-[#F8FAFC] flex font-sans selection:bg-[#10B981] selection:text-[#0B1713]">
+      {/* Dark Forest Sidebar */}
+      <Sidebar
         currentTab={currentTab}
         setCurrentTab={setCurrentTab}
+        isOpenMobile={isMobileSidebarOpen}
+        setIsOpenMobile={setIsMobileSidebarOpen}
         onOpenPortalSelection={handleOpenPortalSelection}
       />
 
       {/* Main Content Area */}
-      <main className="flex-1 pb-16">
-        {renderContent()}
-      </main>
+      <div className="flex-1 flex flex-col min-w-0 lg:pl-72 min-h-screen">
+        {/* Top Navigation */}
+        <Navbar
+          currentTab={currentTab}
+          setCurrentTab={setCurrentTab}
+          onOpenPortalSelection={handleOpenPortalSelection}
+          onToggleMobileSidebar={() => setIsMobileSidebarOpen(true)}
+          isStandalone={false}
+        />
 
-      {/* Global Footer */}
-      <footer className="border-t border-slate-900 bg-slate-950/80 py-6 text-center text-xs text-slate-500 print:hidden">
-        <div className="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-3">
-          <p>© 2026 ClassGuard AI — Smart Classroom Safety & Attention Monitoring System</p>
-          <div className="flex items-center gap-4 text-[11px] text-slate-400">
-            <span>🛡️ 100% On-Device Local Inference</span>
-            <span>🔒 Zero Cloud Video</span>
-            <span>⚖️ Human Teacher In The Loop</span>
+        {/* Dynamic Page Views */}
+        <main className="flex-1 pb-16">
+          {renderContent()}
+        </main>
+
+        {/* Global Footer */}
+        <footer className="border-t border-[#294638] bg-[#10231C]/60 py-6 text-center text-xs text-[#A7B8AE] print:hidden">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-3">
+            <p>© 2026 ClassGuard AI — Smart Classroom Safety & Attention Monitoring System</p>
+            <div className="flex items-center gap-4 text-[11px] text-[#A7B8AE]">
+              <span className="flex items-center gap-1">
+                <span className="w-1.5 h-1.5 rounded-full bg-[#10B981]" />
+                100% On-Device Local Inference
+              </span>
+              <span>🔒 Zero Cloud Video</span>
+              <span>⚖️ Human Teacher In The Loop</span>
+            </div>
           </div>
-        </div>
-      </footer>
+        </footer>
+      </div>
     </div>
   );
 };
